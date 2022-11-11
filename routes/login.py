@@ -1,4 +1,4 @@
-from flask import Blueprint, request
+from flask import Blueprint, request,jsonify
 from flask_cors import cross_origin
 login = Blueprint('login',__name__)
 
@@ -8,6 +8,6 @@ def handleLogin():
     if request.method == 'POST':
         print(request.form['usuario'])
         print(request.form['password'])
-        return 'positivo'
+        return jsonify({'nombre':'hola'})
     elif request.method == 'GET':
         return 'ESTE ES UN GET'
