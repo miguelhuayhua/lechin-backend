@@ -7,6 +7,7 @@ login = Blueprint('login',__name__)
 def handleLogin():
     if request.method == 'POST':
         print(request.form['usuario'])
+        print(request.form['password'])
         return 'positivo'
     elif request.method == 'GET':
         return 'ESTE ES UN GET'
