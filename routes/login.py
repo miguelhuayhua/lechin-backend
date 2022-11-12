@@ -1,9 +1,9 @@
 from flask import Blueprint, request,jsonify
 from flask_cors import cross_origin
-from routes.coneccion import con,commit
+from routes.coneccion import db
 login = Blueprint('login',__name__)
+db = db()
 
-cur = con()
 @login.route('/inicio_session',methods = ['POST'])
 @cross_origin()
 def inicio_session():
