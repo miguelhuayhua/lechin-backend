@@ -2,15 +2,22 @@ from flask import Blueprint, request,jsonify
 from flask_cors import cross_origin
 from routes.coneccion import db
 mostrar = Blueprint('mostrar',__name__)
-db = db()
+#mysql-mysqlwithpython.alwaysdata.net
+#3306
+#282543_1
 
 @mostrar.route('/usuarios')
 @cross_origin()
 def Index():
-    cur = db.cursor()
-    cur.execute('SELECT * FROM login where estado=0')
-    row = cur.fetchall()
-    db.close()
+    database = db()
+    row = None
+    try:
+        cur = database.cursor()
+        cur.execute('SELECT * FROM login where estado=0')
+        row = cur.fetchall()
+        database.close()
+    except Exception as e:
+        print(e)
     i=0
     usuarios=[]
     for n in row:

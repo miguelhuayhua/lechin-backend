@@ -9,8 +9,9 @@ db = db()
 def mostrar_historial():
     cur =db.cursor()
     cur.execute('SELECT * FROM estudiante where estado=0')
-    db.close()
     row = cur.fetchall()
+    db.close()
+
     i=0
     login=[]
     for n in row:
