@@ -10,7 +10,6 @@ def inicio_session():
     if request.method == 'POST':
         usuario = request.form['usuario']
         password = request.form['password']
-        
         cur = db.cursor()
         if cur.execute("""select id_l from login where estado=0 and usuario=%s and password =%s;""",(usuario,password))==True:
             id_dlogin = cur.fetchall()
@@ -25,6 +24,7 @@ def inicio_session():
                                     values(%s,%s,NULL,0);""",(num_dl,id_dlogin[0][0]))
             db.commit()
             print(num_dl)
+            db.close()
             return jsonify({"id_clave":num_dl})
         else:
             return('Paswword o user no existe')
@@ -43,4 +43,5 @@ def cierre_session():
         cur.execute("""UPDATE detalle_login set estado = 1 ,fecha_finalisar = NOW() 
                         WHERE id_dl=%s;""",(id_dl[0][0]))
         db.commit()
+        db.close()
         return ('/Abandonando session')

@@ -16,6 +16,7 @@ def add_materia():
             cur.execute("""INSERT INTO materia(nombre,grado,estado) 
                                     VALUES(%s,%s,0);""",(nombre,grado))
             db.commit()
+            db.close()
             return('Nueva Materia insertada')
         else:
             return('Ya existe materia')

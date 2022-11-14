@@ -10,6 +10,7 @@ def Index():
     cur = db.cursor()
     cur.execute('SELECT * FROM login where estado=0')
     row = cur.fetchall()
+    db.close()
     i=0
     usuarios=[]
     for n in row:
