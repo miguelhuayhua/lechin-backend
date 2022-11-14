@@ -2,15 +2,15 @@ from flask import Blueprint, request,jsonify
 from flask_cors import cross_origin
 from routes.coneccion import db
 login = Blueprint('login',__name__)
-db = db()
 
 @login.route('/inicio_session',methods = ['POST'])
 @cross_origin()
 def inicio_session():
+    database = db()
     if request.method == 'POST':
         usuario = request.form['usuario']
         password = request.form['password']
-        cur = db.cursor()
+        cur = database.cursor()
         if cur.execute("""select id_l from login where estado=0 and usuario=%s and password =%s;""",(usuario,password))==True:
             id_dlogin = cur.fetchall()
         
@@ -22,9 +22,9 @@ def inicio_session():
             # se crea session
             cur.execute("""insert into detalle_login(num_dl,id_login,fecha_finalisar,estado)
                                     values(%s,%s,NULL,0);""",(num_dl,id_dlogin[0][0]))
-            db.commit()
+            database.commit()
             print(num_dl)
-            db.close()
+            database.close()
             return jsonify({"id_clave":num_dl})
         else:
             return('Paswword o user no existe')
@@ -35,13 +35,13 @@ def inicio_session():
 def cierre_session():
     if request.method == 'POST':
         num_dl = request.form['num_dl']
-        
-        cur = db.cursor()
+        database = db()
+        cur = database.cursor()
         cur.execute("""select max(id_dl) from detalle_login 
                     where num_dl=%s and estado=0;""",(num_dl,))
         id_dl = cur.fetchall()
         cur.execute("""UPDATE detalle_login set estado = 1 ,fecha_finalisar = NOW() 
                         WHERE id_dl=%s;""",(id_dl[0][0]))
-        db.commit()
-        db.close()
+        database.commit()
+        database.close()
         return ('/Abandonando session')

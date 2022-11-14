@@ -5,7 +5,6 @@ mostrar = Blueprint('mostrar',__name__)
 #mysql-mysqlwithpython.alwaysdata.net
 #3306
 #282543_1
-
 @mostrar.route('/usuarios')
 @cross_origin()
 def Index():
