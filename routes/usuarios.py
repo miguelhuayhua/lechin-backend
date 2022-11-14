@@ -1,13 +1,14 @@
 from flask import Blueprint, request,jsonify
 from flask_cors import cross_origin
-from routes.coneccion import con
-usuarios = Blueprint('usuarios',__name__)
+from routes.coneccion import db
+usuario = Blueprint('usuario',__name__)
+db = db()
 
-cur=con()
-@usuarios.route("/")
+@usuario.route("/prueba")
 @cross_origin()
 def mostrar_historial():
-    cur.execute('SELECT * FROM login where estado=0')
+    cur =db.cursor()
+    cur.execute('SELECT * FROM estudiante where estado=0')
     row = cur.fetchall()
     i=0
     login=[]

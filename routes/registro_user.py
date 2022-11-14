@@ -34,10 +34,11 @@ def ides1():
         max = cur.fetchall()
         ides='E'+str(int(max[0][0])+1)
         return(ides)  
-    
+  
 @insercion.route('/insertar e',methods=['POST'])
 def insertar_estudiante():
     if request.method == 'POST':
+        fecha_nac = request.form['fecha_nac']
         nombres = request.form['nombres']
         apellidos = request.form['apellidos']
         carnet = request.form['carnet']
@@ -89,9 +90,9 @@ def insertar_estudiante():
         print(id_registro)
         ides=idde1()
         print(ides)
-        cur.execute("""insert into estudiante(num_es,nombres,apellidos,carnet,email,telf,edad,genero,foto,direccion,id_pais,id_departamento,id_registro,estado)
-                                   values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,0);"""
-                                   ,(ides,nombres,apellidos,int(carnet),email,telf,int(edad),genero,foto,direccion,id_pais[0][0],id_departamento[0][0],id_registro[0][0]))
+        cur.execute("""insert into estudiante(fecha_nac,num_es,nombres,apellidos,carnet,email,telf,edad,genero,foto,direccion,id_pais,id_departamento,id_registro,estado)
+                                   values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,0);"""
+                                   ,(fecha_nac,ides,nombres,apellidos,int(carnet),email,telf,int(edad),genero,foto,direccion,id_pais[0][0],id_departamento[0][0],id_registro[0][0]))
         db.commit()
         return ('INsercion con exito estudiantes')
 
@@ -107,6 +108,7 @@ def iddo1():
 @insercion.route('/insertar d',methods=['POST'])
 def insertar_docente():
     if request.method == 'POST':
+        fecha_nac = request.form['fecha_nac']
         nombres = request.form['nombres']
         apellidos = request.form['apellidos']
         carnet = request.form['carnet']
@@ -156,9 +158,9 @@ def insertar_docente():
         id_registro=cur.fetchall()
         print(id_registro)
         iddo=iddo1()
-        cur.execute("""insert into DOCENTES(num_do,nombres,apellidos,carnet,email,telf,edad,genero,foto,direccion,id_pais,id_departamento,id_registro,estado)
-                                   values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,0);"""
-                                   ,(iddo,nombres,apellidos,int(carnet),email,telf,int(edad),genero,foto,direccion,id_pais[0][0],id_departamento[0][0],id_registro[0][0]))
+        cur.execute("""insert into DOCENTES(id_registro,fecha_nac,num_do,nombres,apellidos,carnet,email,telf,edad,genero,foto,direccion,id_pais,id_departamento,id_registro,estado)
+                                   values(NULL,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,0);"""
+                                   ,(fecha_nac,iddo,nombres,apellidos,int(carnet),email,telf,int(edad),genero,foto,direccion,id_pais[0][0],id_departamento[0][0],id_registro[0][0]))
         db.commit()
         return ('INsercion con exito docentes')
 
@@ -172,6 +174,7 @@ def idadm1():
 @insercion.route('/insertar d',methods=['POST'])
 def insertar_docente():
     if request.method == 'POST':
+        fecha_nac = request.form['fecha_nac']
         nombres = request.form['nombres']
         apellidos = request.form['apellidos']
         carnet = request.form['carnet']
@@ -221,8 +224,8 @@ def insertar_docente():
         id_registro=cur.fetchall()
         print(id_registro)
         idadm=idadm1()
-        cur.execute("""insert into personal_admininistrativo(num_adm,nombres,apellidos,carnet,email,telf,edad,genero,foto,direccion,id_pais,id_departamento,id_registro,estado)
-                                   values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,0);"""
-                                   ,(idadm,nombres,apellidos,int(carnet),email,telf,int(edad),genero,foto,direccion,id_pais[0][0],id_departamento[0][0],id_registro[0][0]))
+        cur.execute("""insert into personal_admininistrativo(id_registro,fecha_nac,num_adm,nombres,apellidos,carnet,email,telf,edad,genero,foto,direccion,id_pais,id_departamento,id_registro,estado)
+                                   values(NULL.%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,0);"""
+                                   ,(fecha_nac,idadm,nombres,apellidos,int(carnet),email,telf,int(edad),genero,foto,direccion,id_pais[0][0],id_departamento[0][0],id_registro[0][0]))
         db.commit()
-        return ('INsercion con exito administardor')
+        return ('Insercion con exito administardor')
