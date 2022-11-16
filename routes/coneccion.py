@@ -1,6 +1,7 @@
 from pymysql import connect
 
 def db():
+    db = connect(
     try:
         db = connect(
         host='bvcpgguw0kpl5h91bxdy-mysql.services.clever-cloud.com',
