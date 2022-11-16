@@ -59,7 +59,7 @@ def ides1():
                 print('NO hay valores')
                 return('E1') 
         
-@usuarios.route('/insertar e',methods=['POST'])
+@insercion.route('/insertar e',methods=['POST'])
 @cross_origin()
 def insertar_estudiante():
     if request.method == 'POST':
@@ -123,7 +123,6 @@ def insertar_estudiante():
         database.commit()
         database.close()
         return ('1')
-#============================================================================================#    
 
 def iddo1():
         cur = db.cursor()
