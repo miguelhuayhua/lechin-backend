@@ -16,20 +16,3 @@ def decript(encriptado,llave):
         return(llave)
     else:
         return('fallo')
-
-# def codificador(id):
-#     b=id.encode("UTF-8")
-#     e = b64encode(b)
-#     print(e)
-#     return(e)
-# def decode(encrip):
-#     s = b64decode(encrip)
-#     #b=s.decode("UTF-8")
-#     print(s)
-#     return(s)
-
-# # text='DL10'
-# # d=codificador(text)
-# # print(d)
-# # print(decode(d))
-# # print(d)

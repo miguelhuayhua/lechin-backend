@@ -50,7 +50,7 @@ def inicio_session():
 def cierre_session():
     if request.method == 'POST':
         codigo = request.form['num_dl']
-         num_dl = codigo
+        num_dl = codigo
         database = db()
         cur = database.cursor()
         cur.execute("""select id_dl from detalle_login 
