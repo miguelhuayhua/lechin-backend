@@ -18,7 +18,6 @@ def id_reg(user,clave):
         max = cur.fetchall()
         database.close()
         return(max[0][0]) 
-
 @login.route('/inicio_session',methods = ['POST'])
 @cross_origin()
 def inicio_session():
@@ -29,6 +28,10 @@ def inicio_session():
         password = encript(clave)
         cur = database.cursor()
         num_u = llave(usuario,password)
+        password = request.form['password']
+        cur = database.cursor()
+        if cur.execute("""select id_l from login where estado=0 and usuario=%s and password =%s;""",(usuario,password))==True:
+            id_dlogin = cur.fetchall()
         
         if num_u!= None:
             num_dl='D'+str(num_u)
@@ -41,6 +44,12 @@ def inicio_session():
             database.close()
             codigo=num_dl
             return ({'clave':codigo})
+            cur.execute("""insert into detalle_login(num_dl,id_login,fecha_finalisar,estado)
+                                    values(%s,%s,NULL,0);""",(num_dl,id_dlogin[0][0]))
+            database.commit()
+            print(num_dl)
+            database.close()
+            return jsonify({"id_clave":num_dl})
         else:
             return('0')
 
@@ -54,6 +63,10 @@ def cierre_session():
         database = db()
         cur = database.cursor()
         cur.execute("""select id_dl from detalle_login 
+        num_dl = request.form['num_dl']
+        database = db()
+        cur = database.cursor()
+        cur.execute("""select max(id_dl) from detalle_login 
                     where num_dl=%s and estado=0;""",(num_dl,))
         id_dl = cur.fetchall()
         #UPDATE detalle_login  set estado = 1 ,fecha_finalisar = NOW() WHERE id_dl=3;
@@ -62,3 +75,4 @@ def cierre_session():
         database.commit()
         database.close()
         return ('1')
+        return ('/Abandonando session')

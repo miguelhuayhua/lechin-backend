@@ -9,8 +9,8 @@ from flask_cors import CORS
 app = Flask(__name__)
 
 CORS(app)
-app.register_blueprint(mostrar)
 app.register_blueprint(login)
+app.register_blueprint(mostrar)
 app.register_blueprint(usuario)
 app.register_blueprint(login)
 app.register_blueprint(insercion)

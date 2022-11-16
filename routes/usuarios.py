@@ -10,10 +10,12 @@ def mostrar_historial():
     cur =db.cursor()
     cur.execute('SELECT * FROM estudiante where estado=0')
     row = cur.fetchall()
+    db.close()
+
     i=0
     login=[]
     for n in row:
         login.append({"usuario":row[i][1],"password":row[i][2],"tocken_cea":row[i][3]})
         i=i+1
-    print(login)
+   
     return jsonify(login)
