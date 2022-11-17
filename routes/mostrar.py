@@ -2,17 +2,122 @@ from flask import Blueprint, request,jsonify
 from flask_cors import cross_origin
 from routes.coneccion import db
 mostrar = Blueprint('mostrar',__name__)
-db = db()
 
 @mostrar.route('/usuarios')
 @cross_origin()
-def Index():
-    cur = db.cursor()
-    cur.execute('SELECT * FROM login where estado=0')
+def usuarios():
+    database = db()
+    cur = database.cursor()
+    cur.execute('SELECT * FROM registro_usuario where estado=0')
     row = cur.fetchall()
     i=0
     usuarios=[]
     for n in row:
-        usuarios.append({"nombre":row[i][1],"email":row[i][2],"pasword":row[i][3]})
+        usuarios.append({"num_u":row[i][1],"usuario":row[i][2],"pasword":row[i][3]})
+        i=i+1
+        database.close()
+        database.commit()
+    return jsonify(usuarios)
+
+@mostrar.route('/estudiante_xfecha')
+@cross_origin()
+def estudiante_xfecha():
+    cur = db.cursor()
+    cur.execute('SELECT nombres,apellidos,carnet,email,fecha_nac FROM estudiante where estado=0 and fecha_nac=01/02/2022')
+    row = cur.fetchall()
+    i=0
+    usuarios=[]
+    for n in row:
+        usuarios.append({"num_u":row[i][1],"usuario":row[i][2],"pasword":row[i][3]})
         i=i+1
     return jsonify(usuarios)
+
+@mostrar.route('/estudiante_xapellido')
+@cross_origin()
+def estudiante_xapellido():
+    cur = db.cursor()
+    cur.execute('SELECT nombres,apellidos,carnet,email,fecha_nac FROM estudiante where estado=0 and apellidos')
+    row = cur.fetchall()
+    i=0
+    usuarios=[]
+    for n in row:
+        usuarios.append({"num_u":row[i][1],"usuario":row[i][2],"pasword":row[i][3]})
+        i=i+1
+    return jsonify(usuarios)
+
+@mostrar.route('/materia')
+@cross_origin()
+def materia():
+    database = db()
+    cur = database.cursor()
+    cur.execute('SELECT * FROM materia where estado=0')
+    row = cur.fetchall()
+    i=0
+    usuarios=[]
+    for n in row:
+        usuarios.append({"num_u":row[i][1],"usuario":row[i][2],"pasword":row[i][3]})
+        i=i+1
+        database.close()
+        database.commit()
+    return jsonify(usuarios)
+
+@mostrar.route('/especialidad')
+@cross_origin()
+def especialidad():
+    database = db()
+    cur = database.cursor()
+    cur.execute('SELECT * FROM especialidad where estado=0')
+    row = cur.fetchall()
+    i=0
+    usuarios=[]
+    for n in row:
+        usuarios.append({"num_u":row[i][1],"usuario":row[i][2],"pasword":row[i][3]})
+        i=i+1
+        database.close()
+        database.commit()
+    return jsonify(usuarios)
+
+@mostrar.route('/docentes')
+@cross_origin()
+def docentes():
+    database = db()
+    cur = database.cursor()
+    cur.execute('SELECT * FROM docentes where estado=0')
+    row = cur.fetchall()
+    i=0
+    usuarios=[]
+    for n in row:
+        usuarios.append({"num_u":row[i][1],"usuario":row[i][2],"pasword":row[i][3]})
+        i=i+1
+        database.close()
+        database.commit()
+    return jsonify(usuarios)
+
+@mostrar.route('/calificacion')
+@cross_origin()
+def calificacion():
+    database = db()
+    cur = database.cursor()
+    cur.execute('SELECT * FROM calificacion where estado=0')
+    row = cur.fetchall()
+    i=0
+    usuarios=[]
+    for n in row:
+        usuarios.append({"num_u":row[i][1],"usuario":row[i][2],"pasword":row[i][3]})
+        i=i+1
+        database.close()
+        database.commit()
+    return jsonify(usuarios)
+
+# def ejemplo():
+#     database = db()
+#     cur = database.cursor()
+#     cur.execute('SELECT * FROM roles where estado=0;')
+#     row = cur.fetchall()
+#     i=0
+#     print(row)
+#     usuarios=[]
+#     for n in row:
+#         usuarios.append({"nombre":row[i][1],"email":row[i][2]})
+#         i=i+1
+#     return jsonify(usuarios)

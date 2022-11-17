@@ -2,7 +2,7 @@ from flask import Blueprint, request,jsonify
 from flask_cors import cross_origin
 from routes.coneccion import db
 from routes.encriptar import encript
-insercion = Blueprint('insercion',__name__)
+registro = Blueprint('registro',__name__)
 
 def idu1():
         database = db()
@@ -23,10 +23,11 @@ def ides1():
         database.close()
         return(ides) 
 
-@insercion.route('/add_registro',methods=['POST'])        
+@registro.route('/registro_estudiante',methods=['POST'])        
 @cross_origin()
-def add_user():
+def registro_estudiante():
     if request.method == 'POST':
+        iduser = request.form['iduser']
         usuario = request.form['usuario']
         clave = request.form['password']
         password = encript(clave)
@@ -35,14 +36,18 @@ def add_user():
         database = db()
         cur = database.cursor()
         # registrouser
-        idu = idu1()
         if cur.execute("""insert into registro_usuario(num_u,usuario,password,token_cea,id_roles,estado) 
-                                        values(%s,%s,%s,%s,1,0);""",(idu,usuario,password,token_cea)) ==True:
+                                        values(%s,%s,%s,%s,1,0);""",(iduser,usuario,password,token_cea)) ==True:
+            cur.execute("SELECT id_u FROM registro_usuario where estado=0 and num_u=%s;", (iduser,))
+            id_registro=cur.fetchall()
+            cur.execute("SELECT max(id_es) FROM estudiante where estado=0;")
+            id_es=cur.fetchall()
+            cur.execute("UPDATE estudiante set id_registro = %s WHERE id_es = %s;", (id_registro,id_es))
             return ('1')
         else:
             return('0')
 
-@insercion.route('/add_estudiante',methods=['POST'])
+@registro.route('/add_estudiante',methods=['POST'])
 @cross_origin()
 def add_estudiante():
     if request.method == 'POST':
@@ -60,40 +65,20 @@ def add_estudiante():
         #conneccion
         database = db()
         cur = database.cursor()
-        #estudiante//
-        idu=idu1()
-        cur.execute("SELECT id_u FROM registro_usuario where estado=0 and num_u=%s;", (idu,))
-        id_registro=cur.fetchall()
         ides=ides1()
         print(ides)
         if cur.execute("""insert into estudiante(num_es,nombres,apellidos,carnet,email,fecha_nac,telf,edad,genero,direccion,departamento,id_registro,estado)
-                                   values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,0);"""
-                                   ,(ides,nombres,apellidos,int(carnet),email,fecha_nac,telf,int(edad),genero,direccion,departamento,id_registro[0][0]))==True:
+                                   values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,NULL,0);"""
+                                   ,(ides,nombres,apellidos,int(carnet),email,fecha_nac,telf,int(edad),genero,direccion,departamento))==True:
             database.commit()
             database.close()
-            return ('1')
+            idu = idu1()
+            return jsonify({'iduser':idu})
         else:
             database.close()
             return('0')
 
 #=====AREA DOCENTE Y ADMIN=======================================================================================#    
-
-@insercion.route('/especialidad',methods=['POST'])        
-@cross_origin()
-def add_especialidad():
-    if request.method == 'POST':
-        name_especialidad = request.form['name_especialidad']
-        database = db()
-        cur = database.cursor()
-        if cur.execute("""insert into especialidad(nombre,estado)
-                       values(%s,0);""",(name_especialidad,))==True:
-            database.commit()
-            database.close()
-            return ('1')
-        else:
-            database.close()
-            return('0')
-
 def iddo1():
         database = db()
         cur = database.cursor()
@@ -113,7 +98,7 @@ def idesp1(especiality):
         database.close()
         return(ide)  
     else:
-        return('ERROR')
+        return(None)
     
 def idd1():
     database = db()
@@ -123,8 +108,74 @@ def idd1():
     idD='DP'+str(max[0][0])
     database.close()
     return(idD)    
+      
+@registro.route('/registro_docente',methods=['POST'])        
+@cross_origin()
+def registro_docente():
+    if request.method == 'POST':
+        iduser = request.form['iduser']
+        usuario = request.form['usuario']
+        clave = request.form['password']
+        password = encript(clave)
+        token_cea = request.form['token_cea']
+        #conneccion
+        database = db()
+        cur = database.cursor()
+        # registrouser
+        if cur.execute("""insert into registro_usuario(num_u,usuario,password,token_cea,id_roles,estado) 
+                                        values(%s,%s,%s,%s,1,0);""",(iduser,usuario,password,token_cea)) ==True:
+            cur.execute("SELECT id_u FROM registro_usuario where estado=0 and num_u=%s;", (iduser,))
+            id_registro=cur.fetchall()
+            cur.execute("SELECT max(id_do) FROM docentes where estado=0;")
+            id_do=cur.fetchall()
+            cur.execute("UPDATE docentes set id_registro = %s WHERE id_do = %s;", (id_registro,id_do))
+            return ('1')
+        else:
+            return('0')
+
+@registro.route('/detalle_doc',methods=['POST'])        
+@cross_origin()
+def detalle_doc():
+    if request.method == 'POST':
+        curriculum = request.form['curriculum']
+        academia_pertenece = request.form['academia_pertenece']
+        fecha_antiguedad = request.form['fecha_antiguedad']
         
-@insercion.route('/add_docente',methods=['POST'])
+        name_especialidad = request.form['name_especialidad']
+        id_especialidad = idesp1(name_especialidad)
+        if id_especialidad != None:
+        #conneccion
+            database = db()
+            cur = database.cursor()
+            #detalle_user
+            idd = idd1()
+            if cur.execute("""insert into detalle_personal(num_dd,curriculum,academia_pertenece,fecha_antiguedad,id_especialidad,estado) 
+                                        values(%s,%s,%s,%s,%s,0);""",(idd,curriculum,academia_pertenece,fecha_antiguedad,id_especialidad)) == True:                    
+                cur.execute("SELECT id_dd FROM detalle_personal where estado=0 and num_u=%s;", (idd,))
+                id_detalle=cur.fetchall()
+                cur.execute("SELECT max(id_do) FROM docentes where estado=0;")
+                id_do=cur.fetchall()
+                cur.execute("UPDATE docentes set id_detalle = %s WHERE id_do = %s;", (id_detalle,id_do))
+                return ('1')
+            else:
+                return('0')
+
+@registro.route('/especialidad',methods=['POST'])        
+@cross_origin()
+def especialidad():
+    if request.method == 'POST':
+        name_especialidad = request.form['name_especialidad']
+        database = db()
+        cur = database.cursor()
+        if cur.execute("""insert into especialidad(nombre,estado)values(%s,0);""",(name_especialidad,))==True:
+            database.commit()
+            database.close()
+            return ('1')
+        else:
+            database.close()
+            return('0')
+    
+@registro.route('/add_docente',methods=['POST'])
 @cross_origin()
 def add_docente():
     if request.method == 'POST':
@@ -138,46 +189,23 @@ def add_docente():
         genero = request.form['genero']
         direccion = request.form['direccion']
         departamento = request.form['departamento']
-        
-        usuario = request.form['usuario']
-        clave = request.form['password']
-        password = encript(clave)
-        token_cea = request.form['token_cea']
-        
-        curriculum = request.form['curriculum']
-        academia_pertenece = request.form['academia_pertenece']
-        fecha_antiguedad = request.form['fecha_antiguedad']
-        
-        name_especialidad = request.form['name_especialidad']
-        id_especialidad = ides1(name_especialidad)
 
         #conneccion
         database = db()
         cur = database.cursor()
-        #registro user
-        idu=idu1()
-        cur.execute("""insert into registro_usuario(num_u,usuario,password,token_cea,id_roles,estado) 
-                                        values(%s,%s,%s,%s,2,0);""",(idu,usuario,password,token_cea))
-        #detalle_user
-        idd = idd1()
-        cur.execute("""insert into detalle_personal(num_dd,curriculum,academia_pertenece,fecha_antiguedad,id_especialidad,estado) 
-                                        values(%s,%s,%s,%s,%s,0);""",(idd,curriculum,academia_pertenece,fecha_antiguedad,id_especialidad))
-        #estudiante//
-        cur.execute("SELECT id_u FROM registro_usuario where estado=0 and num_u=%s;", (idu,))
-        id_registro=cur.fetchall()
-        cur.execute("SELECT id_dd FROM detalle_personal where estado=0 and num_dd=%s;", (idd,))
-        id_detalle=cur.fetchall()
-        ides=ides1()
+        idd=idd1()
         if cur.execute("""insert into docentes(num_do,nombres,apellidos,carnet,email,fecha_nac,telf,edad,genero,direccion,departamento,id_registro,id_detalle,id_reportes,estado)
-                                   values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,NULL,0);"""
-                                   ,(ides,nombres,apellidos,int(carnet),email,fecha_nac,telf,int(edad),genero,direccion,departamento,id_registro[0][0],id_detalle[0][0]))==True:
+                                   values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,NULL,NULL,NULL,0);"""
+                                   ,(idd,nombres,apellidos,int(carnet),email,fecha_nac,telf,int(edad),genero,direccion,departamento))==True:
             database.commit()
             database.close()
-            return ('1')
+            idu = idu1()
+            return ({'iduser':idu})
         else:
             database.close()
             return('0')
 
+# -------------- ADMIN ---------------------------------------------------------
 def idadm1():
     database = db()
     cur = database.cursor()
@@ -187,56 +215,7 @@ def idadm1():
     database.close()
     return(idadm)  
 
-@insercion.route('/add_admin',methods=['POST'])
+@registro.route('/add_admin',methods=['POST'])
 @cross_origin()
 def add_admin():
-    if request.method == 'POST':
-        nombres = request.form['nombres']
-        apellidos = request.form['apellidos']
-        carnet = request.form['carnet']
-        email = request.form['email']
-        fecha_nac = request.form['fecha_nac']
-        telf = request.form['telf']
-        edad = request.form['edad']
-        genero = request.form['genero']
-        direccion = request.form['direccion']
-        departamento = request.form['departamento']
-        
-        usuario = request.form['usuario']
-        clave = request.form['password']
-        password = encript(clave)
-        token_cea = request.form['token_cea']
-        
-        curriculum = request.form['curriculum']
-        academia_pertenece = request.form['academia_pertenece']
-        fecha_antiguedad = request.form['fecha_antiguedad']
-        
-        name_especialidad = request.form['name_especialidad']
-        id_especialidad = ides1(name_especialidad)
-
-        #conneccion
-        database = db()
-        cur = database.cursor()
-        #registro user
-        idu=idu1()
-        cur.execute("""insert into registro_usuario(num_u,usuario,password,token_cea,id_roles,estado) 
-                                        values(%s,%s,%s,%s,3,0);""",(idu,usuario,password,token_cea))
-        #detalle_user
-        idd = idd1()
-        cur.execute("""insert into detalle_personal(num_dd,curriculum,academia_pertenece,fecha_antiguedad,id_especialidad,estado) 
-                                        values(%s,%s,%s,%s,%s,0);""",(idd,curriculum,academia_pertenece,fecha_antiguedad,id_especialidad))
-        #estudiante//
-        cur.execute("SELECT id_u FROM registro_usuario where estado=0 and num_u=%s;", (idu,))
-        id_registro=cur.fetchall()
-        cur.execute("SELECT id_dd FROM detalle_personal where estado=0 and num_dd=%s;", (idd,))
-        id_detalle=cur.fetchall()
-        idadm=idadm1()
-        if cur.execute("""insert into personal_administrativo(num_do,nombres,apellidos,carnet,email,fecha_nac,telf,edad,genero,direccion,departamento,id_registro,id_detalle,id_reportes,estado)
-                                   values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,NULL,0);"""
-                                   ,(idadm,nombres,apellidos,int(carnet),email,fecha_nac,telf,int(edad),genero,direccion,departamento,id_registro[0][0],id_detalle[0][0]))==True:
-            database.commit()
-            database.close()
-            return ('1')
-        else:
-            database.close()
-            return('0')
+    return('0')

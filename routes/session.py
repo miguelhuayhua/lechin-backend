@@ -1,8 +1,7 @@
 from flask import Blueprint, request,jsonify
 from flask_cors import cross_origin
 from routes.coneccion import db
-import base64
-login = Blueprint('login',__name__)
+session = Blueprint('session',__name__)
 
 def llave(user,clave):
         database = db()
@@ -19,7 +18,7 @@ def id_reg(user,clave):
         database.close()
         return(max[0][0]) 
 
-@login.route('/inicio_session',methods = ['POST'])
+@session.route('/inicio_session',methods = ['POST'])
 @cross_origin()
 def inicio_session():
     database = db()
@@ -40,16 +39,16 @@ def inicio_session():
             database.commit()
             database.close()
             codigo=num_dl
-            return ({'clave':codigo})
+            return jsonify({'clave':codigo})
         else:
             return('0')
 
 #Deves retornarme el num_dl que te mande para cerrar la session 
-@login.route('/cierre_session',methods = ['POST'])
+@session.route('/cierre_session',methods = ['POST'])
 @cross_origin()
 def cierre_session():
     if request.method == 'POST':
-        codigo = request.form['num_dl']
+        codigo = request.form['clave']
         num_dl = codigo
         database = db()
         cur = database.cursor()
