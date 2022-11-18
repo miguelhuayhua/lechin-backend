@@ -3,37 +3,77 @@ from flask_cors import cross_origin
 from routes.coneccion import db
 mostrar = Blueprint('mostrar',__name__)
 
-@mostrar.route('/usuarios')
+@mostrar.route('/usuario_todo')
 @cross_origin()
-def usuarios():
+def usuario_todo():
     database = db()
     cur = database.cursor()
-    cur.execute('SELECT * FROM registro_usuario where estado=0')
+    cur.execute('SELECT num_u,usuario FROM registro_usuario where estado=0')
     row = cur.fetchall()
+    database.close()
     i=0
     usuarios=[]
     for n in row:
-        usuarios.append({"num_u":row[i][1],"usuario":row[i][2],"pasword":row[i][3]})
+        usuarios.append({"num_u":row[i][2],"usuario":row[i][1]})
         i=i+1
-        database.close()
-        database.commit()
     return jsonify(usuarios)
+
+@mostrar.route('/usuario_xid',methods=['POST'])
+@cross_origin()
+def usuario_xid():
+    if request.method == 'POST':
+        id_user = request.form['id_user'] 
+        database = db()
+        cur = database.cursor()
+        cur.execute("""SELECT num_u,usuario FROM registro_usuario 
+                    where estado=0 and num_u=%s or usuario=%s""",(id_user,))
+        row = cur.fetchall()
+        database.close()
+        i=0
+        usuarios=[]
+        for n in row:
+            usuarios.append({"num_u":row[i][2],"usuario":row[i][1]})
+            i=i+1
+        return jsonify(usuarios)
 
 @mostrar.route('/estudiante_todo')
 @cross_origin()
-def estudiante_xfecha():
-    cur = db.cursor()
+def estudiante_todo():
+    database = db()
+    cur = database.cursor()
     cur.execute("""SELECT num_es,nombres,apellidos,carnet,email,fecha_nac,telf,edad,genero,direccion,departamento,r.usuario
                 FROM estudiante e join registro_usuario r 
                 ON e.id_registro = r.id_u
                 where e.estado=0;""")
     row = cur.fetchall()
+    database.close()
     i=0
     usuarios=[]
     for n in row:
         usuarios.append({"num_es":row[i][0],"nombres":row[i][1],"apellidos":row[i][2],"carnet":row[i][3],"email":row[i][4],"fecha_nac":row[i][5],"telf":row[i][6],"edad":row[i][7],"genero":row[i][8],"direccion":row[i][9],"departamento":row[i][10],"usuario":row[i][11]})
         i=i+1
     return jsonify(usuarios)
+
+@mostrar.route('/estudiante_xid',methods=['POST'])
+@cross_origin()
+def estudiante_xid():
+    if request.method == 'POST':
+        idestudiante = request.form['idestudiante']
+        #conneccion
+        database = db()
+        cur = database.cursor()
+        cur.execute("""SELECT num_es,nombres,apellidos,carnet,email,fecha_nac,telf,edad,genero,direccion,departamento,r.usuario
+                FROM estudiante e join registro_usuario r 
+                ON e.id_registro = r.id_u
+                where e.estado=0 and num_es=%s or carnet=%s;""",(idestudiante,))
+        row = cur.fetchall()
+        database.close()
+        i=0
+        usuarios=[]
+        for n in row:
+            usuarios.append({"num_es":row[i][0],"nombres":row[i][1],"apellidos":row[i][2],"carnet":row[i][3],"email":row[i][4],"fecha_nac":row[i][5],"telf":row[i][6],"edad":row[i][7],"genero":row[i][8],"direccion":row[i][9],"departamento":row[i][10],"usuario":row[i][11]})
+            i=i+1
+        return jsonify(usuarios)
 
 @mostrar.route('/estudiante_xapellido')
 @cross_origin()
@@ -53,12 +93,12 @@ def estudiante_xapellido():
 def materia():
     database = db()
     cur = database.cursor()
-    cur.execute('SELECT * FROM materia where estado=0')
+    cur.execute('SELECT id_m,nombre,url,grado,costo FROM materia where estado=0')
     row = cur.fetchall()
     i=0
     usuarios=[]
     for n in row:
-        usuarios.append({"num_u":row[i][1],"usuario":row[i][2],"pasword":row[i][3]})
+        usuarios.append({"id_m":row[i][0],"nombre":row[i][1],"url":row[i][2],"grado":row[i][3],"costo":row[i][4]})
         i=i+1
         database.close()
         database.commit()
@@ -69,16 +109,58 @@ def materia():
 def especialidad():
     database = db()
     cur = database.cursor()
-    cur.execute('SELECT * FROM especialidad where estado=0')
+    cur.execute('SELECT id_e,nombre FROM especialidad where estado=0')
     row = cur.fetchall()
     i=0
     usuarios=[]
     for n in row:
-        usuarios.append({"num_u":row[i][1],"usuario":row[i][2],"pasword":row[i][3]})
+        usuarios.append({"id_e":row[i][0],"especialidad":row[i][1]})
         i=i+1
         database.close()
         database.commit()
     return jsonify(usuarios)
+
+@mostrar.route('/docente_todo')
+@cross_origin()
+def docente_todo():
+    database = db()
+    cur = database.cursor()
+    cur.execute("""SELECT num_do,nombres,apellidos,carnet,email,fecha_nac,telf,edad,genero,direccion,departamento,r.usuario,p.academia_pertenece,p.fecha_antiguedad,e.nombre
+                FROM docentes d join registro_usuario r 
+                ON d.id_registro = r.id_u JOIN detalle_personal p
+                ON d.id_detalle = p.id_dd JOIN especialidad e
+                ON p.id_especialidad = e.id_e
+                where d.estado=0;""")
+    row = cur.fetchall()
+    database.close()
+    i=0
+    usuarios=[]
+    for n in row:
+        usuarios.append({"num_do":row[i][0],"nombres":row[i][1],"apellidos":row[i][2],"carnet":row[i][3],"email":row[i][4],"fecha_nac":row[i][5],"telf":row[i][6],"edad":row[i][7],"genero":row[i][8],"direccion":row[i][9],"departamento":row[i][10],"usuario":row[i][11],"academia_pertenece":row[i][12],"fecha_antiguedad":row[i][13],"especialidad":row[i][14]})
+        i=i+1
+    return jsonify(usuarios)
+
+@mostrar.route('/docente_xid',methods=['POST'])
+@cross_origin()
+def docente_xid():
+    if request.method == 'POST':
+        iddocente = request.form['iddocente'] 
+        database = db()
+        cur = database.cursor()
+        cur.execute("""SELECT num_do,nombres,apellidos,carnet,email,fecha_nac,telf,edad,genero,direccion,departamento,r.usuario,p.academia_pertenece,p.fecha_antiguedad,e.nombre
+                FROM docentes d join registro_usuario r 
+                ON d.id_registro = r.id_u JOIN detalle_personal p
+                ON d.id_detalle = p.id_dd JOIN especialidad e
+                ON p.id_especialidad = e.id_e
+                where d.estado=0 and d.num_do=%s or d.carnet=%s;""",(iddocente,))
+        row = cur.fetchall()
+        database.close()
+        i=0
+        usuarios=[]
+        for n in row:
+            usuarios.append({"num_do":row[i][0],"nombres":row[i][1],"apellidos":row[i][2],"carnet":row[i][3],"email":row[i][4],"fecha_nac":row[i][5],"telf":row[i][6],"edad":row[i][7],"genero":row[i][8],"direccion":row[i][9],"departamento":row[i][10],"usuario":row[i][11],"academia_pertenece":row[i][12],"fecha_antiguedad":row[i][13],"especialidad":row[i][14]})
+            i=i+1
+        return jsonify(usuarios)
 
 @mostrar.route('/docentes')
 @cross_origin()

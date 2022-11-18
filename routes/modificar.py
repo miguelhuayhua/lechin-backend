@@ -3,7 +3,7 @@ from flask_cors import cross_origin
 from routes.coneccion import db
 modificar = Blueprint('modificar',__name__)
 
-@modificar.route('/update_estudiante/<id>',methods=['POST'])
+@modificar.route('/update_user_estudiante/<id>',methods=['POST'])
 def update_estudiante(id):
      if request.method == 'POST':
         usuario = request.form['usuario']
