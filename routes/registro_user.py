@@ -27,25 +27,29 @@ def ides1():
 @cross_origin()
 def registro_estudiante():
     if request.method == 'POST':
-        iduser = request.form['iduser']
+        iduser = request.form['num_u']
         usuario = request.form['usuario']
         clave = request.form['password']
         password = encript(clave)
         token_cea = request.form['token_cea']
         #conneccion
         database = db()
+        insertar = database.cursor()
         cur = database.cursor()
+        print(iduser)
         # registrouser
-        if cur.execute("""insert into registro_usuario(num_u,usuario,password,token_cea,id_roles,estado) 
+        if insertar.execute("""insert into registro_usuario(num_u,usuario,password,token_cea,id_roles,estado) 
                                         values(%s,%s,%s,%s,1,0);""",(iduser,usuario,password,token_cea)) ==True:
-            cur.execute("SELECT id_u FROM registro_usuario where estado=0 and num_u=%s;", (iduser,))
-            id_registro=cur.fetchall()
-            cur.execute("SELECT max(id_es) FROM estudiante where estado=0;")
-            id_es=cur.fetchall()
-            cur.execute("UPDATE estudiante set id_registro = %s WHERE id_es = %s;", (id_registro,id_es))
-            return ('1')
+            
+            cur.execute("SELECT * FROM registro_usuario where estado=0 and num_u=%s;", (iduser))
+            user = cur.fetchall()
+            id_registro=user[0][0]
+            cur.execute("UPDATE estudiante set id_registro = %s WHERE num_es = %s;", (id_registro,iduser))
+            database.commit()
+            database.close()
+            return jsonify({'status':1})
         else:
-            return('0')
+            return jsonify({'status':0})
 
 @registro.route('/add_estudiante',methods=['POST'])
 @cross_origin()
@@ -66,17 +70,15 @@ def add_estudiante():
         database = db()
         cur = database.cursor()
         ides=ides1()
-        print(ides)
         if cur.execute("""insert into estudiante(num_es,nombres,apellidos,carnet,email,fecha_nac,telf,edad,genero,direccion,departamento,id_registro,estado)
                                    values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,NULL,0);"""
                                    ,(ides,nombres,apellidos,int(carnet),email,fecha_nac,telf,int(edad),genero,direccion,departamento))==True:
             database.commit()
             database.close()
-            idu = idu1()
-            return jsonify(idu)
+            return jsonify({'id':ides})
         else:
             database.close()
-            return('0')
+            return jsonify({'error':1})
 
 #=====AREA DOCENTE Y ADMIN=======================================================================================#    
 def iddo1():

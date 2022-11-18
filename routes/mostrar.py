@@ -9,14 +9,13 @@ def usuarios():
     database = db()
     cur = database.cursor()
     cur.execute('SELECT * FROM registro_usuario where estado=0')
-    row = cur.fetchall()
-    i=0
+    row = cur.fetchall()    
     usuarios=[]
     for n in row:
-        usuarios.append({"num_u":row[i][1],"usuario":row[i][2],"pasword":row[i][3]})
-        i=i+1
-        database.close()
-        database.commit()
+        print(n)
+        usuarios.append({"num_u":n[1],"usuario":n[2]})
+    database.commit()
+    database.close()
     return jsonify(usuarios)
 
 @mostrar.route('/estudiante_todo')
@@ -112,6 +111,19 @@ def calificacion():
         database.commit()
     return jsonify(usuarios)
 
+
+@mostrar.route('/estudiante', methods=['POST'])
+@cross_origin()
+def obtenerEstudiante():
+    if request.method == 'POST':
+        num_es = request.form['num_es']
+        database = db()
+        cur = database.cursor()
+        cur.execute("""SELECT nombres, apellidos, carnet, email, fecha_nac, telf, edad, genero, direccion, departamento, id_registro 
+                fROM estudiante WHERE num_es = %s""",(num_es))
+        est = cur.fetchone()
+        estudiante = {'nombres':est[0],'apellidos':est[1],'carnet':est[2],'email':est[3],'fecha_nac':est[4], 'telefono':est[5], 'edad':est[6],'genero':est[7],'direccion':est[8],'departamento':est[9],'id_registro':est[10]}
+        return jsonify(estudiante)
 # def ejemplo():
 #     database = db()
 #     cur = database.cursor()
