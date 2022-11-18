@@ -1,4 +1,4 @@
-from flask import Blueprint, request,jsonify
+from flask import Blueprint,jsonify,request
 from flask_cors import cross_origin
 from routes.coneccion import db
 mostrar = Blueprint('mostrar',__name__)
@@ -19,16 +19,19 @@ def usuarios():
         database.commit()
     return jsonify(usuarios)
 
-@mostrar.route('/estudiante_xfecha')
+@mostrar.route('/estudiante_todo')
 @cross_origin()
 def estudiante_xfecha():
     cur = db.cursor()
-    cur.execute('SELECT nombres,apellidos,carnet,email,fecha_nac FROM estudiante where estado=0 and fecha_nac=01/02/2022')
+    cur.execute("""SELECT num_es,nombres,apellidos,carnet,email,fecha_nac,telf,edad,genero,direccion,departamento,r.usuario
+                FROM estudiante e join registro_usuario r 
+                ON e.id_registro = r.id_u
+                where e.estado=0;""")
     row = cur.fetchall()
     i=0
     usuarios=[]
     for n in row:
-        usuarios.append({"num_u":row[i][1],"usuario":row[i][2],"pasword":row[i][3]})
+        usuarios.append({"num_es":row[i][0],"nombres":row[i][1],"apellidos":row[i][2],"carnet":row[i][3],"email":row[i][4],"fecha_nac":row[i][5],"telf":row[i][6],"edad":row[i][7],"genero":row[i][8],"direccion":row[i][9],"departamento":row[i][10],"usuario":row[i][11]})
         i=i+1
     return jsonify(usuarios)
 

@@ -1,6 +1,7 @@
 from flask import Blueprint, request,jsonify
 from flask_cors import cross_origin
 from routes.coneccion import db
+from routes.encriptar import encript
 session = Blueprint('session',__name__)
 
 def llave(user,clave):

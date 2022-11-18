@@ -73,7 +73,7 @@ def add_estudiante():
             database.commit()
             database.close()
             idu = idu1()
-            return jsonify({'iduser':idu})
+            return jsonify(idu)
         else:
             database.close()
             return('0')

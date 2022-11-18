@@ -1,6 +1,5 @@
 from flask import Flask
 from routes.mostrar import mostrar
-from routes.mostrar import ejemplo
 from routes.registro_user import registro
 from routes.session import session
 from routes.modificar import modificar
@@ -15,7 +14,6 @@ app.register_blueprint(session)
 app.register_blueprint(modificar)
 app.register_blueprint(inscripcion)
 app.register_blueprint(mostrar)
-
 
 
 
