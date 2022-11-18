@@ -123,6 +123,7 @@ def obtenerEstudiante():
                 fROM estudiante WHERE num_es = %s""",(num_es))
         est = cur.fetchone()
         estudiante = {'nombres':est[0],'apellidos':est[1],'carnet':est[2],'email':est[3],'fecha_nac':est[4], 'telefono':est[5], 'edad':est[6],'genero':est[7],'direccion':est[8],'departamento':est[9],'id_registro':est[10]}
+        database.close()
         return jsonify(estudiante)
 # def ejemplo():
 #     database = db()
