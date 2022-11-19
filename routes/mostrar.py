@@ -47,21 +47,19 @@ def estudiante_xapellido():
         i=i+1
     return jsonify(usuarios)
 
-@mostrar.route('/materia')
+@mostrar.route('/materias')
 @cross_origin()
 def materia():
     database = db()
     cur = database.cursor()
     cur.execute('SELECT * FROM materia where estado=0')
-    row = cur.fetchall()
-    i=0
-    usuarios=[]
-    for n in row:
-        usuarios.append({"num_u":row[i][1],"usuario":row[i][2],"pasword":row[i][3]})
-        i=i+1
-        database.close()
-        database.commit()
-    return jsonify(usuarios)
+    materias = cur.fetchall()
+    listaMaterias=[]
+    for mat in materias:
+        listaMaterias.append({"id_m":mat[0],"nombre":mat[1],"url":mat[2],"grado":mat[3],"costo":mat[4],"id_semestre":mat[5],"estado":mat[6], "fecha_desde":mat[7],"fecha_hasta":mat[8],"descripcion":mat[9]})
+    database.close()
+    print(listaMaterias)
+    return jsonify(listaMaterias)
 
 @mostrar.route('/especialidad')
 @cross_origin()
@@ -123,6 +121,7 @@ def obtenerEstudiante():
                 fROM estudiante WHERE num_es = %s""",(num_es))
         est = cur.fetchone()
         estudiante = {'nombres':est[0],'apellidos':est[1],'carnet':est[2],'email':est[3],'fecha_nac':est[4], 'telefono':est[5], 'edad':est[6],'genero':est[7],'direccion':est[8],'departamento':est[9],'id_registro':est[10]}
+        cur.close()
         database.close()
         return jsonify(estudiante)
 # def ejemplo():

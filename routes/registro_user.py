@@ -34,16 +34,16 @@ def registro_estudiante():
         token_cea = request.form['token_cea']
         #conneccion
         database = db()
-        insertar = database.cursor()
         cur = database.cursor()
         print(iduser)
         # registrouser
-        if insertar.execute("""insert into registro_usuario(num_u,usuario,password,token_cea,id_roles,estado) 
+        if cur.execute("""insert into registro_usuario(num_u,usuario,password,token_cea,id_roles,estado) 
                                         values(%s,%s,%s,%s,1,0);""",(iduser,usuario,password,token_cea)) ==True:
-            
+            print('ok')
             cur.execute("SELECT * FROM registro_usuario where estado=0 and num_u=%s;", (iduser))
             user = cur.fetchall()
             id_registro=user[0][0]
+            print(id_registro)
             cur.execute("UPDATE estudiante set id_registro = %s WHERE num_es = %s;", (id_registro,iduser))
             database.commit()
             database.close()
