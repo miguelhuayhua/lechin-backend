@@ -42,7 +42,7 @@ def inicio_session():
             codigo=num_dl
             return jsonify({'clave':codigo})
         else:
-            return('0')
+            return jsonify({'status':0})
 
 #Deves retornarme el num_dl que te mande para cerrar la session 
 @session.route('/cierre_session',methods = ['POST'])
@@ -61,4 +61,4 @@ def cierre_session():
                         WHERE id_dl=%s;""",(id_dl[0][0]))
         database.commit()
         database.close()
-        return ('1')
+        return jsonify({'status':1})
