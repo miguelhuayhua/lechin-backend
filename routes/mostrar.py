@@ -8,14 +8,15 @@ mostrar = Blueprint('mostrar',__name__)
 def usuario_todo():
     database = db()
     cur = database.cursor()
-    cur.execute('SELECT num_u,usuario FROM registro_usuario where estado=0')
-    row = cur.fetchall()
-    database.close()
-    i=0
+    cur.execute('SELECT * FROM registro_usuario where estado=0')
+    row = cur.fetchall()    
     usuarios=[]
     for n in row:
-        usuarios.append({"num_u":row[i][2],"usuario":row[i][1]})
-        i=i+1
+        print(n)
+        usuarios.append({"num_u":n[1],"usuario":n[2]})
+    database.commit()
+    database.close()
+
     return jsonify(usuarios)
 
 @mostrar.route('/usuario_xid',methods=['POST'])
@@ -95,6 +96,18 @@ def docente_todo():
         i=i+1
     return jsonify(usuarios)
 
+@mostrar.route('/materias')
+@cross_origin()
+def materia():
+    database = db()
+    cur = database.cursor()
+    cur.execute('SELECT * FROM materia where estado=0')
+    materias = cur.fetchall()
+    listaMaterias=[]
+    for mat in materias:
+        listaMaterias.append({"id_m":mat[0],"nombre":mat[1],"url":mat[2],"grado":mat[3],"costo":mat[4],"id_semestre":mat[5],"estado":mat[6], "fecha_desde":mat[7],"fecha_hasta":mat[8],"descripcion":mat[9]})
+    database.close()
+    return jsonify(listaMaterias)
 @mostrar.route('/docente_xid',methods=['POST'])
 @cross_origin()
 def docente_xid():
@@ -204,3 +217,45 @@ def especialidad():
         database.close()
         database.commit()
     return jsonify(usuarios)
+
+
+@mostrar.route('/estudiante', methods=['POST'])
+@cross_origin()
+def obtenerEstudiante():
+    if request.method == 'POST':
+        num_es = request.form['num_es']
+        database = db()
+        cur = database.cursor()
+        cur.execute("""SELECT nombres, apellidos, carnet, email, fecha_nac, telf, edad, genero, direccion, departamento, id_registro 
+                fROM estudiante WHERE num_es = %s""",(num_es))
+        est = cur.fetchone()
+        estudiante = {'nombres':est[0],'apellidos':est[1],'carnet':est[2],'email':est[3],'fecha_nac':est[4], 'telf':est[5], 'edad':est[6],'genero':est[7],'direccion':est[8],'departamento':est[9],'id_registro':est[10]}
+        cur.close()
+        database.close()
+        return jsonify(estudiante)
+    
+@mostrar.route('/usuario',methods=['POST'])
+@cross_origin()
+def obtenerUsuario():
+    if request.method == 'POST':
+        num_u = request.form['num_u']
+        database = db()
+        cur = database.cursor()
+        cur.execute("""SELECT usuario, token_cea, id_roles FROM registro_usuario WHERE num_u = %s """,(num_u))
+        us = cur.fetchone()
+        usuario = {'usuario':us[0],'token_cea':us[1],'id_roles':us[2]}
+        cur.close()
+        database.close()
+        return jsonify(usuario)
+# def ejemplo():
+#     database = db()
+#     cur = database.cursor()
+#     cur.execute('SELECT * FROM roles where estado=0;')
+#     row = cur.fetchall()
+#     i=0
+#     print(row)
+#     usuarios=[]
+#     for n in row:
+#         usuarios.append({"nombre":row[i][1],"email":row[i][2]})
+#         i=i+1
+#     return jsonify(usuarios)

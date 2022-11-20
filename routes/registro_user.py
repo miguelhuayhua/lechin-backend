@@ -26,11 +26,10 @@ def registro_estudiante():
         database = db()
         insertar = database.cursor()
         cur = database.cursor()
-        print(iduser)
         # registrouser
         if insertar.execute("""insert into registro_usuario(num_u,usuario,password,token_cea,id_roles,estado) 
                                         values(%s,%s,%s,%s,1,0);""",(iduser,usuario,password,token_cea)) ==True:
-            
+            print('ok')
             cur.execute("SELECT * FROM registro_usuario where estado=0 and num_u=%s;", (iduser))
             user = cur.fetchall()
             id_registro=user[0][0]
@@ -60,7 +59,6 @@ def add_estudiante():
         database = db()
         cur = database.cursor()
         ides=ides1()
-        print(ides)
         if cur.execute("""insert into estudiante(num_es,nombres,apellidos,carnet,email,fecha_nac,telf,edad,genero,direccion,departamento,id_registro,estado)
                                    values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,NULL,0);"""
                                    ,(ides,nombres,apellidos,int(carnet),email,fecha_nac,telf,int(edad),genero,direccion,departamento))==True:
@@ -70,8 +68,6 @@ def add_estudiante():
         else:
             database.close()
             return jsonify({'error':1})
-
-
 #=====AREA DOCENTE Y ADMIN=======================================================================================#    
 def iddo1():
         database = db()
