@@ -98,7 +98,7 @@ def docente_todo():
 
 @mostrar.route('/materias')
 @cross_origin()
-def materia():
+def materias():
     database = db()
     cur = database.cursor()
     cur.execute('SELECT * FROM materia where estado=0')
@@ -130,30 +130,19 @@ def docente_xid():
             i=i+1
         return jsonify(usuarios)
 
-@mostrar.route('/estudiante', methods=['POST'])
-@cross_origin()
-def obtenerEstudiante():
-    if request.method == 'POST':
-        num_es = request.form['num_es']
-        database = db()
-        cur = database.cursor()
-        cur.execute("""SELECT nombres, apellidos, carnet, email, fecha_nac, telf, edad, genero, direccion, departamento, id_registro 
-                fROM estudiante WHERE num_es = %s""",(num_es))
-        est = cur.fetchone()
-        estudiante = {'nombres':est[0],'apellidos':est[1],'carnet':est[2],'email':est[3],'fecha_nac':est[4], 'telefono':est[5], 'edad':est[6],'genero':est[7],'direccion':est[8],'departamento':est[9],'id_registro':est[10]}
-        return jsonify(estudiante)
-
 @mostrar.route('/docente', methods=['POST'])
 @cross_origin()
 def obtenerDocente():
     if request.method == 'POST':
-        num_do = request.form['num_do']
+        num_u = request.form['num_u']
         database = db()
         cur = database.cursor()
         cur.execute("""SELECT nombres, apellidos, carnet, email, fecha_nac, telf, edad, genero, direccion, departamento, id_registro 
-                fROM docentes WHERE num_do = %s""",(num_do))
-        est = cur.fetchone()
-        docente = {'nombres':est[0],'apellidos':est[1],'carnet':est[2],'email':est[3],'fecha_nac':est[4], 'telefono':est[5], 'edad':est[6],'genero':est[7],'direccion':est[8],'departamento':est[9],'id_registro':est[10]}
+                fROM docentes WHERE num_do = %s""",(num_u))
+        doc = cur.fetchone()
+        docente = {'nombres':doc[0],'apellidos':doc[1],'carnet':doc[2],'email':doc[3],'fecha_nac':doc[4], 'telefono':doc[5], 'edad':doc[6],'genero':doc[7],'direccion':doc[8],'departamento':doc[9],'id_registro':doc[10]}
+        cur.close()
+        database.close()
         return jsonify(docente)
 
 
@@ -193,13 +182,11 @@ def materia():
     cur = database.cursor()
     cur.execute('SELECT id_m,nombre,url,grado,costo FROM materia where estado=0')
     materias = cur.fetchall()
-    i=0
     listaMaterias=[]
-    for n in materias:
-        listaMaterias.append({"id_m":materias[i][0],"nombre":materias[i][1],"url":materias[i][2],"grado":materias[i][3],"costo":materias[i][4]})
-        i=i+1
-        database.close()
-        database.commit()
+    for materia in materias:
+        listaMaterias.append({"id_m":materia[0],"nombre":materia[1],"url":materia[2],"grado":materia[3],"costo":materia[4]})
+    database.close()
+    database.commit()
     return jsonify(listaMaterias)
 
 @mostrar.route('/especialidad')
@@ -223,17 +210,18 @@ def especialidad():
 @cross_origin()
 def obtenerEstudiante():
     if request.method == 'POST':
-        num_es = request.form['num_es']
+        num_u = request.form['num_u']
         database = db()
         cur = database.cursor()
         cur.execute("""SELECT nombres, apellidos, carnet, email, fecha_nac, telf, edad, genero, direccion, departamento, id_registro 
-                fROM estudiante WHERE num_es = %s""",(num_es))
+                fROM estudiante WHERE num_es = %s""",(num_u))
         est = cur.fetchone()
         estudiante = {'nombres':est[0],'apellidos':est[1],'carnet':est[2],'email':est[3],'fecha_nac':est[4], 'telf':est[5], 'edad':est[6],'genero':est[7],'direccion':est[8],'departamento':est[9],'id_registro':est[10]}
         cur.close()
         database.close()
         return jsonify(estudiante)
-    
+
+
 @mostrar.route('/usuario',methods=['POST'])
 @cross_origin()
 def obtenerUsuario():
@@ -247,15 +235,3 @@ def obtenerUsuario():
         cur.close()
         database.close()
         return jsonify(usuario)
-# def ejemplo():
-#     database = db()
-#     cur = database.cursor()
-#     cur.execute('SELECT * FROM roles where estado=0;')
-#     row = cur.fetchall()
-#     i=0
-#     print(row)
-#     usuarios=[]
-#     for n in row:
-#         usuarios.append({"nombre":row[i][1],"email":row[i][2]})
-#         i=i+1
-#     return jsonify(usuarios)

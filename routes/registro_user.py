@@ -50,7 +50,6 @@ def add_estudiante():
         email = request.form['email']
         fecha_nac = request.form['fecha_nac']
         telf = request.form['telf']
-        edad = request.form['edad']
         genero = request.form['genero']
         direccion = request.form['direccion']
         departamento = request.form['departamento']
@@ -61,7 +60,7 @@ def add_estudiante():
         ides=ides1()
         if cur.execute("""insert into estudiante(num_es,nombres,apellidos,carnet,email,fecha_nac,telf,edad,genero,direccion,departamento,id_registro,estado)
                                    values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,NULL,0);"""
-                                   ,(ides,nombres,apellidos,int(carnet),email,fecha_nac,telf,int(edad),genero,direccion,departamento))==True:
+                                   ,(ides,nombres,apellidos,int(carnet),email,fecha_nac,telf,22,genero,direccion,departamento))==True:
             database.commit()
             database.close()
             return jsonify({'id':ides})
@@ -180,18 +179,17 @@ def add_docente():
         email = request.form['email']
         fecha_nac = request.form['fecha_nac']
         telf = request.form['telf']
-        edad = request.form['edad']
         genero = request.form['genero']
         direccion = request.form['direccion']
         departamento = request.form['departamento']
 
-        #conneccion
+        #conexion
         database = db()
         cur = database.cursor()
         idd=idd1()
         if cur.execute("""insert into docentes(num_do,nombres,apellidos,carnet,email,fecha_nac,telf,edad,genero,direccion,departamento,id_registro,id_detalle,id_reportes,estado)
                                    values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,NULL,NULL,NULL,0);"""
-                                   ,(idd,nombres,apellidos,int(carnet),email,fecha_nac,telf,int(edad),genero,direccion,departamento))==True:
+                                   ,(idd,nombres,apellidos,int(carnet),email,fecha_nac,telf,22,genero,direccion,departamento))==True:
             database.commit()
             database.close()
             return jsonify({'id':idd})
