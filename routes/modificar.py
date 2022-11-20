@@ -3,8 +3,9 @@ from flask_cors import cross_origin
 from routes.coneccion import db
 modificar = Blueprint('modificar',__name__)
 #ACABADO    
-@modificar.route('/updateUserEstudent/<id>',methods=['POST'])
-def update_estudiante(id):
+@modificar.route('/updateUserEstudent',methods=['POST'])
+@cross_origin()
+def updateUserEstudent():
      if request.method == 'POST':
         usuario = request.form['usuario']
         password = request.form['password']
@@ -34,8 +35,9 @@ def update_estudiante(id):
         database.close()
         return jsonify({'status':1})
 #ACABADO    
-@modificar.route('/updateUserDocente/<id>',methods=['POST'])
-def updateUserDocente(id):
+@modificar.route('/updateUserDocente',methods=['POST'])
+@cross_origin()
+def updateUserDocente():
      if request.method == 'POST':
         usuario = request.form['usuario']
         password = request.form['password']
@@ -65,8 +67,9 @@ def updateUserDocente(id):
         database.close()
         return jsonify({'status':1})
 #ACABADO    
-@modificar.route('/updateEstudent/<id>',methods=['POST'])
-def updateEstudent(id):
+@modificar.route('/updateEstudent',methods=['POST'])
+@cross_origin()
+def updateEstudent():
      if request.method == 'POST':
         iduser = request.form['num_u']
         nombres = request.form['nombres']
@@ -111,8 +114,9 @@ def updateEstudent(id):
         database.close()
         return jsonify({'status':1})
 #FALTA 
-@modificar.route('/updateAdmin/<id>',methods=['POST'])
-def updateAdmin(id):
+@modificar.route('/updateAdmin',methods=['POST'])
+@cross_origin()
+def updateAdmin():
      if request.method == 'POST':
         usuario = request.form['usuario']
         password = request.form['password']
@@ -142,8 +146,9 @@ def updateAdmin(id):
         database.close()
         return jsonify({'status':1})
 #FALTA        
-@modificar.route('/updateDocente/<id>',methods=['POST'])
-def updateDocente(id):
+@modificar.route('/updateDocente',methods=['POST'])
+@cross_origin()
+def updateDocente():
      if request.method == 'POST':
         usuario = request.form['usuario']
         password = request.form['password']
