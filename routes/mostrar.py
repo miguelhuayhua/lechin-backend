@@ -204,6 +204,20 @@ def obtenerMateria():
 
 
 
+
+
+
+qqq
+
+
+
+
+
+
+
+
+
+
 @mostrar.route('/especialidad')
 @cross_origin()
 def especialidad():
