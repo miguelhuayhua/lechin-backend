@@ -76,25 +76,20 @@ def estudiante_xid():
             i=i+1
         return jsonify(usuarios)
 
-@mostrar.route('/docente_todo')
+@mostrar.route('/docentes')
 @cross_origin()
 def docente_todo():
     database = db()
     cur = database.cursor()
-    cur.execute("""SELECT num_do,nombres,apellidos,carnet,email,fecha_nac,telf,edad,genero,direccion,departamento,r.usuario,p.academia_pertenece,p.fecha_antiguedad,e.nombre
-                FROM docentes d join registro_usuario r 
-                ON d.id_registro = r.id_u JOIN detalle_personal p
-                ON d.id_detalle = p.id_dd JOIN especialidad e
-                ON p.id_especialidad = e.id_e
-                where d.estado=0;""")
-    row = cur.fetchall()
+    cur.execute("""SELECT num_do,nombres,apellidos,carnet,email,fecha_nac,telf,edad,genero,direccion,departamento,disponible
+                FROM docentes where estado=0;""")
+    docentes = cur.fetchall()
+    cur.close()
     database.close()
-    i=0
-    usuarios=[]
-    for n in row:
-        usuarios.append({"num_do":row[i][0],"nombres":row[i][1],"apellidos":row[i][2],"carnet":row[i][3],"email":row[i][4],"fecha_nac":row[i][5],"telf":row[i][6],"edad":row[i][7],"genero":row[i][8],"direccion":row[i][9],"departamento":row[i][10],"usuario":row[i][11],"academia_pertenece":row[i][12],"fecha_antiguedad":row[i][13],"especialidad":row[i][14]})
-        i=i+1
-    return jsonify(usuarios)
+    listaDocentes=[]
+    for docente in docentes:
+        listaDocentes.append({"num_u":docente[0],"nombres":docente[1],"apellidos":docente[2],"carnet":docente[3],"email":docente[4],"fecha_nac":docente[5],"telf":docente[6],"edad":docente[7],"genero":docente[8],"direccion":docente[9],"departamento":docente[10],"disponible":docente[11]})
+    return jsonify(listaDocentes)
 
 @mostrar.route('/materias')
 @cross_origin()
@@ -108,6 +103,8 @@ def materias():
         listaMaterias.append({"id_m":mat[0],"nombre":mat[1],"url":mat[2],"grado":mat[3],"costo":mat[4],"id_semestre":mat[5],"estado":mat[6], "fecha_desde":mat[7],"fecha_hasta":mat[8],"descripcion":mat[9]})
     database.close()
     return jsonify(listaMaterias)
+
+
 @mostrar.route('/docente_xid',methods=['POST'])
 @cross_origin()
 def docente_xid():
@@ -140,7 +137,7 @@ def obtenerDocente():
         cur.execute("""SELECT nombres, apellidos, carnet, email, fecha_nac, telf, edad, genero, direccion, departamento, id_registro 
                 fROM docentes WHERE num_do = %s""",(num_u))
         doc = cur.fetchone()
-        docente = {'nombres':doc[0],'apellidos':doc[1],'carnet':doc[2],'email':doc[3],'fecha_nac':doc[4], 'telefono':doc[5], 'edad':doc[6],'genero':doc[7],'direccion':doc[8],'departamento':doc[9],'id_registro':doc[10]}
+        docente = {'nombres':doc[0],'apellidos':doc[1],'carnet':doc[2],'email':doc[3],'fecha_nac':doc[4], 'telf':doc[5], 'edad':doc[6],'genero':doc[7],'direccion':doc[8],'departamento':doc[9],'id_registro':doc[10]}
         cur.close()
         database.close()
         return jsonify(docente)
