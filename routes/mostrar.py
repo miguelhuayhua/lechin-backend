@@ -204,20 +204,6 @@ def obtenerMateria():
 
 
 
-
-
-
-qqq
-
-
-
-
-
-
-
-
-
-
 @mostrar.route('/especialidad')
 @cross_origin()
 def especialidad():
@@ -264,3 +250,22 @@ def obtenerUsuario():
         cur.close()
         database.close()
         return jsonify(usuario)
+
+@mostrar.route('/first_login',methods=['POST'])
+@cross_origin()
+def firstLogin():
+    if request.method == 'POST':
+        token = request.form['token']
+        database = db()
+        cur = database.cursor()
+        cur.execute("""SELECT E.num_es, E.nombres, E.apellidos, E.carnet, E.fecha_nac,E.telf, E.edad,
+        E.genero, E.direccion,E.departamento, E.email  FROM estudiante E INNER JOIN registro_usuario U WHERE E.num_es = U.num_u AND E.estado = 0 AND U.token_cea = %s """,(token))
+        est = cur.fetchone()
+        cur.close()
+        database.close()
+        if est != None: 
+            estudiante = {'num_u':est[0],'nombres':est[1],'apellidos':est[2],'carnet':est[3],'fecha_nac':est[4],'telf':est[5],'edad':est[6],'genero':est[7],'direccion':est[8],'departamento':est[9],'email':est[10]}
+            return jsonify(estudiante)
+        else:
+            return {'error':1}
+        
