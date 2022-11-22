@@ -7,13 +7,13 @@ registro = Blueprint('registro',__name__)
 def ides1():
         database = db()
         cur = database.cursor()
-        cur.execute("select count(distinct(num_es))+1 from estudiante where estado=0;")
+        cur.execute("select count(distinct(num_es))+1 from estudiante")
         max = cur.fetchall()
         ides='E'+str(max[0][0])
         database.close()
         return(ides) 
 
-@registro.route('/registro_estudiante',methods=['POST'])        
+@registro.route('/registro_usuario',methods=['POST'])        
 @cross_origin()
 def registro_estudiante():
     if request.method == 'POST':
@@ -21,19 +21,24 @@ def registro_estudiante():
         usuario = request.form['usuario']
         clave = request.form['password']
         password = encript(clave)
-        token_cea = request.form['token_cea']
-        #conneccion
+        token_cea = request.form['token_cea'],
+        tipo= int(request.form['tipo'])
+        #conexion
         database = db()
         insertar = database.cursor()
         cur = database.cursor()
         # registrouser
         if insertar.execute("""insert into registro_usuario(num_u,usuario,password,token_cea,id_roles,estado) 
                                         values(%s,%s,%s,%s,1,0);""",(iduser,usuario,password,token_cea)) ==True:
-            print('ok')
             cur.execute("SELECT * FROM registro_usuario where estado=0 and num_u=%s;", (iduser))
             user = cur.fetchall()
             id_registro=user[0][0]
-            cur.execute("UPDATE estudiante set id_registro = %s WHERE num_es = %s;", (id_registro,iduser))
+            if tipo == 3:
+                cur.execute("UPDATE estudiante set id_registro = %s WHERE num_es = %s;", (id_registro,iduser))
+            elif tipo == 2:
+                cur.execute("UPDATE docentes set id_registro = %s WHERE num_do = %s;", (id_registro,iduser))
+            else :
+                cur.execute("UPDATE personal_administrativo set id_registro = %s WHERE num_ad = %s;", (id_registro,iduser))
             database.commit()
             database.close()
             return jsonify({'status':1})
@@ -50,7 +55,6 @@ def add_estudiante():
         email = request.form['email']
         fecha_nac = request.form['fecha_nac']
         telf = request.form['telf']
-        edad = request.form['edad']
         genero = request.form['genero']
         direccion = request.form['direccion']
         departamento = request.form['departamento']
@@ -61,7 +65,7 @@ def add_estudiante():
         ides=ides1()
         if cur.execute("""insert into estudiante(num_es,nombres,apellidos,carnet,email,fecha_nac,telf,edad,genero,direccion,departamento,id_registro,estado)
                                    values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,NULL,0);"""
-                                   ,(ides,nombres,apellidos,int(carnet),email,fecha_nac,telf,int(edad),genero,direccion,departamento))==True:
+                                   ,(ides,nombres,apellidos,int(carnet),email,fecha_nac,telf,22,genero,direccion,departamento))==True:
             database.commit()
             database.close()
             return jsonify({'id':ides})
@@ -93,40 +97,12 @@ def idesp1(especiality):
 def idd1():
     database = db()
     cur = database.cursor()
-    cur.execute("select count(distinct(num_dd))+1 from detalle_personal where estado=0;")
+    cur.execute("select count(distinct(num_do))+1 from docentes")
     max = cur.fetchall()
     idD='DP'+str(max[0][0])
     database.close()
     return(idD)    
       
-@registro.route('/registro_docente',methods=['POST'])        
-@cross_origin()
-def registro_docente():
-    if request.method == 'POST':
-        iduser = request.form['num_u']
-        usuario = request.form['usuario']
-        clave = request.form['password']
-        password = encript(clave)
-        token_cea = request.form['token_cea']
-        #conneccion
-        database = db()
-        insertar = database.cursor()
-        cur = database.cursor()
-        print(iduser)
-        # registrouser
-        if insertar.execute("""insert into registro_usuario(num_u,usuario,password,token_cea,id_roles,estado) 
-                                        values(%s,%s,%s,%s,2,0);""",(iduser,usuario,password,token_cea)) ==True:
-            
-            cur.execute("SELECT * FROM registro_usuario where estado=0 and num_u=%s;", (iduser))
-            user = cur.fetchall()
-            id_registro=user[0][0]
-            cur.execute("UPDATE docentes set id_registro = %s WHERE num_do = %s;", (id_registro,iduser))
-            database.commit()
-            database.close()
-            return jsonify({'status':1})
-        else:
-            return jsonify({'status':0})
-
 @registro.route('/detalle_doc',methods=['POST'])        
 @cross_origin()
 def detalle_doc():
@@ -180,18 +156,17 @@ def add_docente():
         email = request.form['email']
         fecha_nac = request.form['fecha_nac']
         telf = request.form['telf']
-        edad = request.form['edad']
         genero = request.form['genero']
         direccion = request.form['direccion']
         departamento = request.form['departamento']
 
-        #conneccion
+        #conexion
         database = db()
         cur = database.cursor()
         idd=idd1()
         if cur.execute("""insert into docentes(num_do,nombres,apellidos,carnet,email,fecha_nac,telf,edad,genero,direccion,departamento,id_registro,id_detalle,id_reportes,estado)
                                    values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,NULL,NULL,NULL,0);"""
-                                   ,(idd,nombres,apellidos,int(carnet),email,fecha_nac,telf,int(edad),genero,direccion,departamento))==True:
+                                   ,(idd,nombres,apellidos,int(carnet),email,fecha_nac,telf,22,genero,direccion,departamento))==True:
             database.commit()
             database.close()
             return jsonify({'id':idd})
@@ -237,35 +212,6 @@ def detalle_admin():
                 return jsonify({'status':0})
         else:
             return('Especialidad no existe, registre su especialidad al DB')
-
-@registro.route('/registroAdmin',methods=['POST'])        
-@cross_origin()
-def registroAdmin():
-    if request.method == 'POST':
-        iduser = request.form['num_u']
-        usuario = request.form['usuario']
-        clave = request.form['password']
-        password = encript(clave)
-        token_cea = request.form['token_cea']
-        #conneccion
-        database = db()
-        insertar = database.cursor()
-        cur = database.cursor()
-        print(iduser)
-        # registrouser
-        if insertar.execute("""insert into registro_usuario(num_u,usuario,password,token_cea,id_roles,estado) 
-                                        values(%s,%s,%s,%s,3,0);""",(iduser,usuario,password,token_cea)) ==True:
-            
-            cur.execute("SELECT * FROM registro_usuario where estado=0 and num_u=%s;", (iduser))
-            user = cur.fetchall()
-            id_registro=user[0][0]
-            cur.execute("UPDATE personal_administrativo set id_registro = %s WHERE num_ad = %s;", (id_registro,iduser))
-            database.commit()
-            database.close()
-            return jsonify({'status':1})
-        else:
-            return jsonify({'status':0})
-
 
 @registro.route('/add_admin',methods=['POST'])
 @cross_origin()
