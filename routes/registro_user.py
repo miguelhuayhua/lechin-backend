@@ -242,3 +242,6 @@ def add_admin():
             database.close()
             return jsonify({'error':1})
 
+
+#CONFIRM DATA USER
+
