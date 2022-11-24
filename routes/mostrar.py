@@ -110,11 +110,12 @@ def estudiantes():
 def materias():
     database = db()
     cur = database.cursor()
-    cur.execute('SELECT * FROM materia where estado=0')
+    cur.execute('SELECT id_m, nombre, url,costo,descripcion, f_inicio,f_final, duracion, hora_inicio,hora_salida FROM materia where estado=0')
     materias = cur.fetchall()
+    cur.close()
     listaMaterias=[]
     for mat in materias:
-        listaMaterias.append({"id_m":mat[0],"nombre":mat[1],"url":mat[2],"grado":mat[3],"costo":mat[4],"id_semestre":mat[5],"estado":mat[6], "fecha_desde":mat[7],"fecha_hasta":mat[8],"descripcion":mat[9]})
+        listaMaterias.append({"id_m":mat[0],"nombre":mat[1],"url":mat[2],"costo":mat[3],"descripcion":mat[4],"f_inicio":mat[5],"f_final":mat[6], "duracion":mat[7],"hora_inicio":mat[8],"salida":mat[9]})
     database.close()
     return jsonify(listaMaterias)
 

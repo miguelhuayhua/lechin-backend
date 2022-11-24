@@ -28,8 +28,8 @@ def registro_estudiante():
         insertar = database.cursor()
         cur = database.cursor()
         # registrouser
-        if insertar.execute("""insert into registro_usuario(num_u,usuario,password,token_cea,id_roles,estado) 
-                                        values(%s,%s,%s,%s,1,0);""",(iduser,usuario,password,token_cea)) ==True:
+        if insertar.execute("""insert into registro_usuario(num_u,usuario,password,token_cea,id_roles,estado,tipo) 
+                                        values(%s,%s,%s,%s,1,0,%s);""",(iduser,usuario,password,token_cea,tipo)) ==True:
             cur.execute("SELECT * FROM registro_usuario where estado=0 and num_u=%s;", (iduser))
             user = cur.fetchall()
             id_registro=user[0][0]

@@ -69,41 +69,33 @@ def add_tipo():
         else:
             return jsonify({'status':0})
 
-@inscripcion.route('/add_semestre',methods=['POST'])        
+@inscripcion.route('/tipos')        
 @cross_origin()
-def add_semestre():
-    if request.method == 'POST':
-        area = request.form['nombre']
-        database = db()
-        cur = database.cursor()
-        if cur.execute("""insert into semestre(nombre,estado)
-                       values(%s,estado));""",(area,))==True:
-            database.commit()
-            database.close()
-            cur.execute("""select max(id_s) from semestre where estado=0 and nombre=%s;""",(area,))
-            ids = cur.fetchall()
-            return jsonify({'id':ids})
-        else:
-            return jsonify({'status':0})
+def tipos():
+    database = db()
+    cur = database.cursor()
+    if cur.execute("""SELECT id_t, area, nivel FROM tipo WHERE estado = 0""",()):
+        tipos = cur.fetchall()
+        listaTipos = [{"id_t":tipo[0], "area":tipo[1],"nivel":tipo[2]} for tipo in tipos]
+        cur.close()
+        database.close()
+        return jsonify(listaTipos)
+    else:
+        return jsonify({"error":1})
 
-@inscripcion.route('/add_materia',methods=['POST'])        
+@inscripcion.route('/turnos')        
 @cross_origin()
-def add_materia():
-    if request.method == 'POST':
-        nombre = request.form['nombre']
-        url = request.form['url']
-        grado = request.form['grado']
-        costo = request.form['costo']
-        idsemestre = request.form['idsemestre']
-        database = db()
-        cur = database.cursor()
-        if cur.execute("""insert into materia(nombre,url,grado,costo,id_semestre,estado)
-                       values(%s,%s,%s,%s,%s,0));""",(nombre,url,grado,costo,idsemestre[0][0]))==True:
-            database.commit()
-            database.close()
-            return jsonify({'status':1})
-        else:
-            return jsonify({'status':0})
+def turnos():
+    database = db()
+    cur = database.cursor()
+    if cur.execute("""SELECT id_t, turno, paralelo FROM turno WHERE estado = 0""",()):
+        turnos = cur.fetchall()
+        listaTurnos = [{"id_t":turno[0], "turno":turno[1],"paralelo":turno[2]} for turno in turnos]
+        cur.close()
+        database.close()
+        return jsonify(listaTurnos)
+    else:
+        return jsonify({"error":1})
 
 @inscripcion.route('/addTurno',methods=['POST'])        
 @cross_origin()
