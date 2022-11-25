@@ -205,21 +205,17 @@ def obtenerMateria():
 
 
 
-@mostrar.route('/especialidad')
+@mostrar.route('/carreras')
 @cross_origin()
 def especialidad():
     database = db()
     cur = database.cursor()
-    cur.execute('SELECT id_e,nombre FROM especialidad where estado=0')
-    row = cur.fetchall()
-    i=0
-    usuarios=[]
-    for n in row:
-        usuarios.append({"id_e":row[i][0],"especialidad":row[i][1]})
-        i=i+1
-        database.close()
-        database.commit()
-    return jsonify(usuarios)
+    cur.execute('SELECT id_e,nombre,universidad FROM carrera where estado=0')
+    carreras = cur.fetchall()
+    listaCarreras = [{'id_e':carrera[0],'nombre':carrera[1],'universidad':carrera[2]} for carrera in carreras]
+    cur.close()
+    database.close()
+    return jsonify(listaCarreras)
 
 
 @mostrar.route('/estudiante', methods=['POST'])

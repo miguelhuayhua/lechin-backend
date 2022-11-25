@@ -3,5 +3,4 @@
 /include
 /Lib
 /Scripts
-
-/routes/__pycache__
+__pycache__/

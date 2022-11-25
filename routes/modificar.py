@@ -150,31 +150,23 @@ def updateAdmin():
 @cross_origin()
 def updateDocente():
      if request.method == 'POST':
-        usuario = request.form['usuario']
-        password = request.form['password']
+        num_dd = request.form['num_dd']
+        antiguedad = int(request.form['antiguedad'])
+        id_carrera = int(request.form['id_carrera'])
         database = db()
         cur = database.cursor()
-        cur.execute("""SELECT num_u,usuario,password,token_cea,id_roles,estado FROM registro_usuario WHERE usuario=%s;""",(usuario))
-        dato = cur.fetchall()
-        cur.execute("""SELECT id_u FROM registro_usuario WHERE usuario=%s;""",(usuario))
-        id = cur.fetchall()
-        cur.execute("""
-            UPDATE registro_usuario
-            SET estado =1, fecha_hasta=NOW()
-            WHERE id_u = %s;
-                """,(id))
-        cur.execute("""
-                    INSERT INTO registro_usuario(num_u,usuario,password,token_cea,id_roles,estado)
-                    VALUES (num_u,usuario,password,token_cea,%s,0)
-                    """,(dato[0][0],usuario,password,dato[0][3],dato[0][4]))
-        cur.execute("""SELECT id_u FROM registro_usuario WHERE estado=0 and num_u=%s;""",(dato[0][0]))
-        id_u = cur.fetchall()
-        cur.execute("""
-            UPDATE estudiante
-            SET id_registro=%s
-            WHERE id_u = %s;
-                """,(id_u[0][0]))
-        database.commit()
-        database.close()
-        return jsonify({'status':1})
-   
+        if cur.execute("""INSERT INTO detalle_personal (num_dd,antiguedad,id_carrera) VALUES (%s,%s,%s)""",
+                    (num_dd,antiguedad,id_carrera)):
+            database.commit()
+            cur.execute("""SELECT id_dd FROM detalle_personal WHERE estado = 0 AND num_dd = %s""",
+                        (num_dd))
+            print(cur.fetchone())
+            id_dd = cur.fetchone()[0]
+            cur.execute("""UPDATE docentes SET id_detalle = %s WHERE estado = 0 AND num_do = %s""",
+                        (id_dd,num_dd ))
+            database.commit()
+            cur.close()
+            database.close()
+            return jsonify({"status":1})
+        else:
+            return jsonify({"status":0})

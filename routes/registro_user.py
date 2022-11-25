@@ -28,17 +28,17 @@ def registro_estudiante():
         insertar = database.cursor()
         cur = database.cursor()
         # registrouser
-        if insertar.execute("""insert into registro_usuario(num_u,usuario,password,token_cea,id_roles,estado,tipo) 
-                                        values(%s,%s,%s,%s,1,0,%s);""",(iduser,usuario,password,token_cea,tipo)) ==True:
-            cur.execute("SELECT * FROM registro_usuario where estado=0 and num_u=%s;", (iduser))
-            user = cur.fetchall()
-            id_registro=user[0][0]
+        if insertar.execute("""insert into registro_usuario(num_u,usuario,password,token_cea,tipo) 
+                                        values(%s,%s,%s,%s,%s);""",(iduser,usuario,password,token_cea,int(tipo))) ==True:
+            cur.execute("SELECT id_u FROM registro_usuario where estado=0 and num_u=%s;", (iduser))
+            user = cur.fetchone()
+            id_u=user[0]
             if tipo == 3:
-                cur.execute("UPDATE estudiante set id_registro = %s WHERE num_es = %s;", (id_registro,iduser))
+                cur.execute("UPDATE estudiante set id_registro = %s WHERE num_es = %s;", (id_u,iduser))
             elif tipo == 2:
-                cur.execute("UPDATE docentes set id_registro = %s WHERE num_do = %s;", (id_registro,iduser))
+                cur.execute("UPDATE docentes set id_registro = %s WHERE num_do = %s;", (id_u,iduser))
             else :
-                cur.execute("UPDATE personal_administrativo set id_registro = %s WHERE num_ad = %s;", (id_registro,iduser))
+                cur.execute("UPDATE personal_administrativo set id_registro = %s WHERE num_ad = %s;", (id_u,iduser))
             database.commit()
             database.close()
             return jsonify({'status':1})
