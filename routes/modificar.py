@@ -3,6 +3,41 @@ from flask_cors import cross_origin
 from routes.coneccion import db
 modificar = Blueprint('modificar',__name__)
 #ACABADO    
+
+@modificar.route('/updateAde',methods=['POST'])
+@cross_origin()
+def updateADE():
+    if request.method == 'POST':
+        num_u = request.form['num_u']
+        nombres = request.form['nombres']
+        apellidos =request.form['apellidos']
+        carnet = request.form['carnet']
+        email = request.form['email']
+        fecha_nac = request.form['fecha_nac']
+        telf = request.form['telf']
+        genero = request.form['genero']
+        direccion = request.form['direccion']
+        departamento = request.form['departamento']
+        tipo = request.form['tipo']
+        
+        database = db()
+        cur = database.cursor()
+        if tipo == '1':
+            cur.execute("""UPDATE personal_administrativo SET nombres = %s, apellidos = %s, carnet = %s,email=%s,fecha_nac=%s,
+                        telf=%s, genero = %s,direccion = %s, departamento = %s WHERE estado = 0 AND num_ad = %s""",
+                        (nombres,apellidos,int(carnet),email,fecha_nac,int(telf),genero,direccion,departamento,num_u))
+        elif tipo == '2':
+            cur.execute("""UPDATE docentes SET nombres = %s, apellidos = %s, carnet = %s,email=%s,fecha_nac=%s,
+                        telf=%s, genero = %s,direccion = %s, departamento = %s WHERE estado = 0 AND num_do = %s""",
+                        (nombres,apellidos,carnet,email,fecha_nac,telf,genero,direccion,departamento,num_u))
+        elif tipo == '3':
+            cur.execute("""UPDATE estudiante SET nombres = %s, apellidos = %s, carnet = %s,email=%s,fecha_nac=%s,
+                        telf=%s, genero = %s,direccion = %s, departamento = %s WHERE estado = 0 AND num_es = %s""",
+                        (nombres,apellidos,carnet,email,fecha_nac,telf,genero,direccion,departamento,num_u))
+        cur.close()
+        database.commit()
+        return jsonify({"status":1})
+    
 @modificar.route('/updateUserEstudent',methods=['POST'])
 @cross_origin()
 def updateUserEstudent():
@@ -160,7 +195,6 @@ def updateDocente():
             database.commit()
             cur.execute("""SELECT id_dd FROM detalle_personal WHERE estado = 0 AND num_dd = %s""",
                         (num_dd))
-            print(cur.fetchone())
             id_dd = cur.fetchone()[0]
             cur.execute("""UPDATE docentes SET id_detalle = %s WHERE estado = 0 AND num_do = %s""",
                         (id_dd,num_dd ))
@@ -170,3 +204,6 @@ def updateDocente():
             return jsonify({"status":1})
         else:
             return jsonify({"status":0})
+        
+
+        

@@ -155,6 +155,7 @@ def add_docente():
         carnet = request.form['carnet']
         email = request.form['email']
         fecha_nac = request.form['fecha_nac']
+        print(fecha_nac)
         telf = request.form['telf']
         genero = request.form['genero']
         direccion = request.form['direccion']
