@@ -114,24 +114,34 @@ def addTurno():
         else:
             return jsonify({'status':0})
 
-@inscripcion.route('/addInscripcion',methods=['POST'])        
+@inscripcion.route('/createInscripcion',methods=['POST'])        
 @cross_origin()
 def addInscripcion():
     if request.method == 'POST':
-        fecha_inscripcion = request.form['fecha_inscripcion']
-        costo_total = request.form['costo_total']
-
+        num_es = request.form['num_es']
+        costo_total = request.form['total']
         database = db()
         cur = database.cursor()
-        num_i = idnum()
-        if cur.execute("""insert into inscripcion(num_i,fecha_inscripcion,costo_total,id_turno,id_materia,id_estudiante,id_docente,tipo_inscripcion,estado)
-                       values(%s,%s,%s,id_turno,id_materia,id_estudiante,id_docente,tipo_inscripcion,0);""",(num_i,fecha_inscripcion,costo_total,id_turno,id_materia,id_estudiante,id_docente,tipo_inscripcion))==True:
+        if cur.execute("""INSERT INTO inscripcion (fecha_inscripcion, costo_total,num_es) VALUES (CURDATE(),%s,%s)""",
+        (costo_total,num_es)):
             database.commit()
+            cur.execute("""SELECT id_i FROM inscripcion WHERE estado = 0 AND num_es = %s """,(num_es))
+            id_i = cur.fetchone()[0]
             database.close()
-            return jsonify({'status':1})
+            return jsonify({'status':1,'id_i':id_i})
         else:
+            database.close()
             return jsonify({'status':0})
 
+
+@inscripcion.route('/createDetalleInscripcion',methods=['POST'])        
+@cross_origin()
+def addDetalleInscripcion():
+    if request.method == 'POST':
+        id_i = request.json['id_i']
+        materias = request.json['materias']
+        print(materias)
+        return jsonify({'status':1})
 @inscripcion.route('/addCalificacion',methods=['POST'])        
 @cross_origin()
 def addCalificacion():

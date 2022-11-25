@@ -51,9 +51,9 @@ def handleConfirmUser():
             'UPDATE registro_usuario SET logged = 1 WHERE num_u = %s AND estado = 0', (num_u))
         database.commit()
         cur.execute(
-            """SELECT usuario, token_cea, id_roles FROM registro_usuario WHERE num_u = %s """, (num_u))
+            """SELECT usuario, token_cea FROM registro_usuario WHERE num_u = %s """, (num_u))
         us = cur.fetchone()
-        usuario = {'usuario': us[0], 'token_cea': us[1], 'id_roles': us[2]}
+        usuario = {'usuario': us[0], 'token_cea': us[1]}
         cur.close()
         database.close()
         return jsonify(usuario)
