@@ -215,11 +215,13 @@ def obtenerMateria():
         database = db()
         cur = database.cursor()
         cur.execute(
-            'SELECT * FROM materia WHERE id_m = %s AND estado = 0', (id_m))
+            """SELECT id_m, nombre, url, costo, descripcion, num_do,id_t, id_turno, f_inicio,
+            duracion,hora_inicio, hora_salida,f_final FROM materia WHERE id_m = %s AND estado = 0""", (id_m))
         mat = cur.fetchone()
         cur.close()
-        materia = {"id_m": mat[0], "nombre": mat[1], "url": mat[2], "grado": mat[3], "costo": mat[4],
-                   "id_semestre": mat[5], "estado": mat[6], "fecha_desde": mat[7], "fecha_hasta": mat[8], "descripcion": mat[9]}
+        materia = {"id_m": mat[0], "nombre": mat[1], "url": mat[2], "costo": mat[3],
+                   "descripcion": mat[4], "num_do": mat[5], "id_t": mat[6], "id_turno": mat[7], "f_inicio": mat[8],
+                   "duracion":mat[9],"hora_inicio":mat[10],"hora_salida":mat[11],"f_final":mat[12]}
         database.close()
         return jsonify(materia)
 

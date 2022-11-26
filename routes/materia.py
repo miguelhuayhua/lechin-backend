@@ -51,3 +51,32 @@ def updateMateriaDetails():
             return jsonify({'status':1})
         else:
             return jsonify({'status':0})
+        
+@materia.route('/updateMateria',methods=['POST'])
+@cross_origin()
+def updateMateria():
+    if request.method == 'POST':
+        id_m = request.form['id_m']
+        nombre = request.form['nombre']
+        url = request.form['url']
+        costo = request.form['costo']
+        descripcion = request.form['descripcion']
+        f_inicio = parser.parse(request.form['f_inicio'])
+        f_final = parser.parse(request.form['f_final'])
+        duracion = request.form['duracion']
+        hora_inicio = request.form['hora_inicio']
+        hora_salida = request.form['hora_salida']
+        database = db()
+        cur = database.cursor()
+        if cur.execute("""UPDATE materia SET nombre = %s, url = %s, costo = %s,
+                    descripcion = %s, f_inicio = %s, duracion = %s, hora_inicio = %s, hora_salida = %s,
+                    f_final = %s WHERE estado = 0 AND id_m = %s""",(nombre,url,costo,descripcion,f_inicio,duracion,hora_inicio,hora_salida,f_final,id_m)):
+            database.commit()
+            cur.close()
+            database.close()
+            return jsonify({'status':1})
+        else:
+            database.close()
+            return jsonify({'status':0})
+
+        

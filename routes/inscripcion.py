@@ -119,7 +119,8 @@ def addTurno():
 def addInscripcion():
     if request.method == 'POST':
         num_es = request.form['num_es']
-        costo_total = request.form['total']
+        costo_total = request.form['costo_total']
+        print(num_es,costo_total)
         database = db()
         cur = database.cursor()
         if cur.execute("""INSERT INTO inscripcion (fecha_inscripcion, costo_total,num_es) VALUES (CURDATE(),%s,%s)""",
@@ -140,7 +141,14 @@ def addDetalleInscripcion():
     if request.method == 'POST':
         id_i = request.json['id_i']
         materias = request.json['materias']
-        print(materias)
+        database = db()
+        cur = database.cursor()
+        for materia in materias:
+            id_m = materia['id_m']
+            cur.execute('INSERT INTO detalle_inscripcion (id_i, id_m) VALUES (%s,%s)',(id_i,id_m))
+        database.commit()
+        cur.close()
+        database.close()
         return jsonify({'status':1})
 @inscripcion.route('/addCalificacion',methods=['POST'])        
 @cross_origin()
