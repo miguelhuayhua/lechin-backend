@@ -272,7 +272,25 @@ def obtenerUsuario():
         database.close()
         return jsonify(usuario)
 
-
+@mostrar.route('/administrativos')
+@cross_origin()
+def obtenerAdministrativos():
+    database = db()
+    cur = database.cursor()
+    if cur.execute(
+        """SELECT num_ad, nombres, apellidos, carnet, email, fecha_nac, telf, edad, genero, direccion, departamento, disponible
+                fROM personal_administrativo"""):
+        administrativos = cur.fetchall()
+        listaAdministrativos = [{"num_u": administrativo[0], "nombres": administrativo[1], "apellidos": administrativo[2], "carnet": administrativo[3], "email": administrativo[4], "fecha_nac": administrativo[5],
+                             "telf": administrativo[6], "edad": administrativo[7], "genero": administrativo[8], "direccion": administrativo[9], "departamento": administrativo[10],"disponible":administrativo[11]}
+                                for administrativo in administrativos]
+        cur.close()
+        database.close()
+        return jsonify(listaAdministrativos)
+    else:
+        database.close()
+        return jsonify({"status":0})
+    
 @mostrar.route('/first_login', methods=['POST'])
 @cross_origin()
 def firstLogin():
@@ -291,3 +309,5 @@ def firstLogin():
             return jsonify(estudiante)
         else:
             return {'error': 1}
+
+
