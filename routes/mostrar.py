@@ -215,7 +215,7 @@ def obtenerMateria():
         database = db()
         cur = database.cursor()
         cur.execute(
-            """SELECT id_m, nombre, url, costo, descripcion, num_do,id_t, id_turno, f_inicio,
+            """SELECT id_m, nombre, url, costo, descripcion, num_do, id_t, id_turno, f_inicio,
             duracion,hora_inicio, hora_salida,f_final FROM materia WHERE id_m = %s AND estado = 0""", (id_m))
         mat = cur.fetchone()
         cur.close()
