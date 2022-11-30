@@ -185,7 +185,7 @@ def updateAdmin():
 @cross_origin()
 def updateDocente():
      if request.method == 'POST':
-        num_dd = request.form['num_dd']
+        num_dd = request.form['num_u']
         antiguedad = int(request.form['antiguedad'])
         id_carrera = int(request.form['id_carrera'])
         database = db()
@@ -205,5 +205,29 @@ def updateDocente():
         else:
             return jsonify({"status":0})
         
+    
+@modificar.route('/updateAdministrativo',methods=['POST'])
+@cross_origin()
+def updateAdministrativo():
+     if request.method == 'POST':
+        num_ad = request.form['num_u']
+        antiguedad = int(request.form['antiguedad'])
+        id_carrera = int(request.form['id_carrera'])
+        database = db()
+        cur = database.cursor()
+        if cur.execute("""INSERT INTO detalle_personal (num_dd,antiguedad,id_carrera) VALUES (%s,%s,%s)""",
+                    (num_ad,antiguedad,id_carrera)):
+            database.commit()
+            cur.execute("""SELECT id_dd FROM detalle_personal WHERE estado = 0 AND num_dd = %s""",
+                        (num_ad))
+            id_dd = cur.fetchone()[0]
+            cur.execute("""UPDATE personal_administrativo SET id_detalle = %s WHERE estado = 0 AND num_ad = %s""",
+                        (id_dd,num_ad ))
+            database.commit()
+            cur.close()
+            database.close()
+            return jsonify({"status":1})
+        else:
+            return jsonify({"status":0})
 
         

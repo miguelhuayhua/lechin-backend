@@ -172,3 +172,26 @@ def addCalificacion():
             return jsonify({'status':1})
         else:
             return jsonify({'status':0})
+
+@inscripcion.route('/getNotasEstudiante', methods=['POST'])
+@cross_origin()
+def getNotasEstudiante():
+    if request.method == 'POST':
+        num_u = request.form['num_u']
+        id_m = request.form['id_m']
+        database = db()
+        cur = database.cursor()
+        print(num_u,id_m)
+        if cur.execute("""SELECT c.num_ca, c.fecha_calificacion, e1parcial, e2parcial, c.e3parcial, c.nota_total,c.finalizado
+FROM calificacion c INNER JOIN inscripcion i ON (c.id_inscripcion = i.id_i) INNER JOIN detalle_inscripcion di ON (di.id_i  = i.id_i) 
+WHERE di.id_m = %s AND c.num_es = %s""", (id_m,num_u)):
+            no = cur.fetchone()
+            nota = {'num_ca':no[0],'fecha_calificacion':no[1],'e1parcial':no[2],'e2parcial':no[3],'e3parcial':no[4],'nota_total':no[5],'finalizado':no[6]}
+            cur.close()
+            database.close()
+            return jsonify(nota)
+        else:
+            database.close()
+            return jsonify({'status':0})
+    
+    

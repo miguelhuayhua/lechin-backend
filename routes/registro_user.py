@@ -155,7 +155,6 @@ def add_docente():
         carnet = request.form['carnet']
         email = request.form['email']
         fecha_nac = request.form['fecha_nac']
-        print(fecha_nac)
         telf = request.form['telf']
         genero = request.form['genero']
         direccion = request.form['direccion']
@@ -179,7 +178,7 @@ def add_docente():
 def idadm1():
     database = db()
     cur = database.cursor()
-    cur.execute("select count(distinct(num_adm))+1 from personal_admininistrativo where estado=0;")
+    cur.execute("select count(distinct(num_ad))+1 from personal_administrativo where estado=0;")
     max = cur.fetchall()
     idadm='AD'+str(max[0][0])
     database.close()
@@ -214,9 +213,9 @@ def detalle_admin():
         else:
             return('Especialidad no existe, registre su especialidad al DB')
 
-@registro.route('/add_admin',methods=['POST'])
+@registro.route('/add_administrativo',methods=['POST'])
 @cross_origin()
-def add_admin():
+def add_administrativo():
     if request.method == 'POST':
         nombres = request.form['nombres']
         apellidos = request.form['apellidos']
@@ -224,25 +223,23 @@ def add_admin():
         email = request.form['email']
         fecha_nac = request.form['fecha_nac']
         telf = request.form['telf']
-        edad = request.form['edad']
         genero = request.form['genero']
         direccion = request.form['direccion']
         departamento = request.form['departamento']
 
-        #conneccion
+        #conexion
         database = db()
         cur = database.cursor()
-        idadm=idadm1()
-        if cur.execute("""insert into docentes(num_do,nombres,apellidos,carnet,email,fecha_nac,telf,edad,genero,direccion,departamento,id_registro,id_detalle,id_reportes,estado)
+        idd=idadm1()
+        if cur.execute("""insert into personal_administrativo(num_ad,nombres,apellidos,carnet,email,fecha_nac,telf,edad,genero,direccion,departamento,id_registro,id_detalle,id_reportes,estado)
                                    values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,NULL,NULL,NULL,0);"""
-                                   ,(idadm,nombres,apellidos,int(carnet),email,fecha_nac,telf,int(edad),genero,direccion,departamento))==True:
+                                   ,(idd,nombres,apellidos,int(carnet),email,fecha_nac,telf,22,genero,direccion,departamento)):
             database.commit()
             database.close()
-            return jsonify({'id':idadm})
+            return jsonify({'id':idd})
         else:
             database.close()
             return jsonify({'error':1})
-
 
 #CONFIRM DATA USER
 
