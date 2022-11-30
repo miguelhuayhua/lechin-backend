@@ -213,14 +213,24 @@ def firstLogin():
         token = request.form['token']
         database = db()
         cur = database.cursor()
-        cur.execute("""SELECT E.num_es, E.nombres, E.apellidos, E.carnet, E.fecha_nac,E.telf, E.edad,
-        E.genero, E.direccion,E.departamento, E.email  FROM estudiante E INNER JOIN registro_usuario U WHERE E.num_es = U.num_u AND E.estado = 0 AND U.token_cea = %s """, (token))
-        est = cur.fetchone()
+        cur.execute("SELECT tipo FROM registro_usuario WHERE token_cea = %s",(token))
+        tipo = cur.fetchone()[0]
+
+        if(tipo==1):
+            cur.execute("""SELECT a.num_ad, a.nombres, a.apellidos, a.carnet, a.fecha_nac,a.telf, a.edad,
+            a.genero, a.direccion,a.departamento, a.email  FROM personal_administrativo a INNER JOIN registro_usuario U WHERE a.num_ad = U.num_u AND a.estado = 0 AND U.token_cea = %s """, (token))
+        elif (tipo==2):
+            cur.execute("""SELECT d.num_ad, d.nombres, d.apellidos, d.carnet, d.fecha_nac,d.telf, d.edad,
+            d.genero, d.direccion,d.departamento, d.email  FROM docentes d INNER JOIN registro_usuario U WHERE d.num_doc = U.num_u AND d.estado = 0 AND U.token_cea = %s """, (token))
+        else:
+            cur.execute("""SELECT E.num_es, E.nombres, E.apellidos, E.carnet, E.fecha_nac,E.telf, E.edad,
+            E.genero, E.direccion,E.departamento, E.email  FROM estudiante E INNER JOIN registro_usuario U WHERE E.num_es = U.num_u AND E.estado = 0 AND U.token_cea = %s """, (token))
+        ade = cur.fetchone()
         cur.close()
         database.close()
-        if est != None:
-            estudiante = {'num_u': est[0], 'nombres': est[1], 'apellidos': est[2], 'carnet': est[3], 'fecha_nac': est[4],
-                          'telf': est[5], 'edad': est[6], 'genero': est[7], 'direccion': est[8], 'departamento': est[9], 'email': est[10]}
+        if ade != None:
+            estudiante = {'num_u': ade[0], 'nombres': ade[1], 'apellidos': ade[2], 'carnet': ade[3], 'fecha_nac': ade[4],
+                          'telf': ade[5], 'edad': ade[6], 'genero': ade[7], 'direccion': ade[8], 'departamento': ade[9], 'email': ade[10]}
             return jsonify(estudiante)
         else:
             return {'error': 1}

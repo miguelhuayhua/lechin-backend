@@ -25,18 +25,19 @@ def handleLogin():
         cur.execute("""SELECT num_u,tipo FROM registro_usuario 
         WHERE estado = 0 AND usuario = %s AND password = %s""", (usuario, encriptedPassword))
         if (cur.rowcount > 0):
-            num_u,tipo = cur.fetchone()
-            
+            num_u, tipo = cur.fetchone()
+            print(num_u, tipo)
             if cur.execute("""INSERT INTO detalle_login(estado,login_token,num_u) VALUES
             (%s,%s,%s)""", (0, token, num_u)):
                 database.commit()
                 cur.close()
                 database.close()
-                return jsonify({'num_u': num_u, 'login_token': token,'tipo':tipo})
+                return jsonify({'num_u': num_u, 'login_token': token, 'tipo': tipo})
             else:
                 return jsonify({'error': 1})
 
         else:
+            print('nooos')
             return jsonify({'error': 1})
 
 
